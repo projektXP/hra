@@ -13,10 +13,10 @@ class Room:
     def abs_coords(self, x, y):
         return x * self.square_size, y * self.square_size
 
-    def things_of_class(self, cls):
+    def things_of_class(self, classname):
         for row in self.map:
             for thing in row:
-                if isinstance(thing, cls):
+                if isinstance(thing, classname):
                     yield thing
 
     def can_move_to(self, x, y):
