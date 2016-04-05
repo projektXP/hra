@@ -13,6 +13,8 @@ class Player(Thing):
             pygame.K_DOWN:  (0, 1),
         }
 
+        self.vision = 3
+
     def move(self):
         keys = pygame.key.get_pressed()
         for key in self.movements:
