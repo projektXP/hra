@@ -4,7 +4,7 @@ import pygame
 
 class Player(Thing):
     def __init__(self, room, x=0, y=0):
-        super(Player, self).__init__(room, x, y)
+        super().__init__(room, x, y)
         self.canvas.fill((255, 0, 0))
         self.movements = {
             pygame.K_LEFT:  (-1, 0),
