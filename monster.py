@@ -87,6 +87,6 @@ class OnceOnSightFollowingMonster(FollowingOnSightOnlyMonster):
         if self.player:
             dx = self.player.x - self.x
             dy = self.player.y - self.y
-            if dx**2 + dy**2 <= self.player.vision**2 or self.trackingPlayer:
+            if self.trackingPlayer or dx**2 + dy**2 <= self.player.vision**2:
                 self.trackingPlayer = True
                 self.followPlayer()
