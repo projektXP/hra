@@ -2,14 +2,14 @@ import pygame
 
 from room import Room
 from thing import Thing
-from monster import Monster
+from monster import Monster, SlowMonster, FastMonster
 from player import Player
 
 pygame.init()
 
 r = Room(20, 40, 30)
 p = Player(r, 1, 1)
-Monster(r, 10, 10)
+SlowMonster(r, 5, 5, p)
 
 screen = pygame.display.set_mode(r.canvas_size())
 
@@ -30,4 +30,4 @@ while True:
         screen.blit(img, r.abs_coords(thing.x, thing.y))
 
     pygame.display.flip()
-    pygame.time.wait(50)
+    pygame.time.wait(500)
