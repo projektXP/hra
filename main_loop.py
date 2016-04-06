@@ -12,6 +12,9 @@ p = Player(r, 1, 1)
 AlwaysFollowingMonster(r, 39, 29, p)
 FollowingOnSightOnlyMonster(r, 0, 29, p)
 OnceOnSightFollowingMonster(r, 20, 29, p)
+AlwaysFollowingMonster(r, 39, 10, p)
+FollowingOnSightOnlyMonster(r, 0, 10, p)
+OnceOnSightFollowingMonster(r, 20, 10, p)
 
 screen = pygame.display.set_mode(r.canvas_size())
 
