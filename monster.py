@@ -43,7 +43,21 @@ class Monster(Thing):
         self.move_to(nx, ny)
 
 
-class FollowingOnSightMonster(Monster):
+
+class AlwaysFollowingMonster(Monster):
+    def __init__(self, room, x=0, y=0, player=None):
+        super().__init__(room, x, y, player)
+
+        self.fast = False
+        self.trackingPlayer = True
+
+    def step(self):
+        if self.player:
+            self.followPlayer()
+
+
+
+class FollowingOnSightOnlyMonster(Monster):
     def __init__(self, room, x=0, y=0, player=None):
         super().__init__(room, x, y, player)
 
@@ -62,13 +76,11 @@ class FollowingOnSightMonster(Monster):
 
 
 
-class AlwaysFollowingMonster(Monster):
-    def __init__(self, room, x=0, y=0, player=None):
-        super().__init__(room, x, y, player)
-
-        self.fast = False
-        self.trackingPlayer = True
-
+class OnceOnSightFollowingMonster(FollowingOnSightOnlyMonster):
     def step(self):
         if self.player:
-            self.followPlayer()
+            dx = self.player.x - self.x
+            dy = self.player.y - self.y
+            if dx**2 + dy**2 <= self.player.vision**2 or self.trackingPlayer:
+                self.trackingPlayer = True
+                self.followPlayer()
