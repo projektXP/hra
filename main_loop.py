@@ -3,18 +3,20 @@ import pygame
 from room import Room
 from thing import Thing
 from monster import Monster, Hunter, Zombie, Vampire
-from player import Player
+
 
 pygame.init()
 
-r = Room(20, 40, 30)
-p = Player(r, 1, 1)
-Hunter(r, 39, 29, p)
-Zombie(r, 0, 29, p)
-Vampire(r, 20, 29, p)
-Hunter(r, 39, 10, p)
-Zombie(r, 0, 10, p)
-Vampire(r, 20, 10, p)
+r = Room(20)
+r.load_from_file("level.map")
+
+Hunter(r, 39, 29)
+Zombie(r, 0, 29)
+Vampire(r, 20, 29)
+Hunter(r, 39, 10)
+Zombie(r, 0, 10)
+Vampire(r, 20, 10)
+
 
 screen = pygame.display.set_mode(r.canvas_size())
 
@@ -26,7 +28,7 @@ while True:
     for monster in r.things_of_class(Monster):
         monster.step()
 
-    p.move()
+    r.player.move()
 
     screen.fill((255, 255, 255))
 

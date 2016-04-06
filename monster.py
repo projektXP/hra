@@ -1,30 +1,28 @@
 import random
 
-from room import Room
 from thing import Thing
-from player import Player
+from abc import ABCMeta, abstractmethod
 
 
-class Monster(Thing):
-    def __init__(self, room: Room, x=0, y=0, player: Player = None):
+class Monster(Thing, metaclass=ABCMeta):
+    def __init__(self, room, x=0, y=0):
         super().__init__(room, x, y)
 
-        self.player = player
         self.speed = 1
         
     def follow_player(self):
         nx, ny = self.x, self.y
-        if self.y == self.player.y and self.player.x == self.x:
+        if self.y == self.room.player.y and self.room.player.x == self.x:
             return
 
-        if self.player.x > self.x:
+        if self.room.player.x > self.x:
             nx = self.x + self.speed
-        elif self.player.x < self.x:
+        elif self.room.player.x < self.x:
             nx = self.x - self.speed
 
-        if self.player.y > self.y:
+        if self.room.player.y > self.y:
             ny = self.y + self.speed
-        elif self.player.y < self.y:
+        elif self.room.player.y < self.y:
             ny = self.y - self.speed
 
         if self.x != nx and self.y != ny:
@@ -35,27 +33,31 @@ class Monster(Thing):
 
         self.move_to(nx, ny)
 
+    @abstractmethod
+    def step(self):
+        pass
+
 
 class Hunter(Monster):
-    def __init__(self, room, x=0, y=0, player=None):
-        super().__init__(room, x, y, player)
+    def __init__(self, room, x=0, y=0):
+        super().__init__(room, x, y)
         self.canvas.fill((0, 255, 0))
 
     def step(self):
-        if self.player:
+        if self.room.player:
             self.follow_player()
 
 
 class Zombie(Monster):
-    def __init__(self, room, x=0, y=0, player=None):
-        super().__init__(room, x, y, player)
+    def __init__(self, room, x=0, y=0):
+        super().__init__(room, x, y)
         self.canvas.fill((0, 128, 0))
 
         self.tracking_player = False
 
     def step(self):
-        if self.player:
-            if self.distance(self.player) <= self.player.vision:
+        if self.room.player:
+            if self.distance(self.room.player) <= self.room.player.vision:
                 self.tracking_player = True
                 self.follow_player()
             else:
@@ -63,14 +65,14 @@ class Zombie(Monster):
 
 
 class Vampire(Monster):
-    def __init__(self, room, x=0, y=0, player=None):
-        super().__init__(room, x, y, player)
+    def __init__(self, room, x=0, y=0):
+        super().__init__(room, x, y)
         self.canvas.fill((255, 255, 0))
 
         self.tracking_player = False
 
     def step(self):
-        if self.player:
-            if self.tracking_player or self.distance(self.player) <= self.player.vision:
+        if self.room.player:
+            if self.tracking_player or self.distance(self.room.player) <= self.room.player.vision:
                 self.tracking_player = True
                 self.follow_player()

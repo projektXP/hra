@@ -6,7 +6,6 @@ class Thing:
         self.x = x
         self.y = y
         self.room = room
-        self.room.map[y][x] = self
 
         self.canvas = pygame.Surface((room.square_size, room.square_size))
 
