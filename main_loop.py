@@ -2,14 +2,14 @@ import pygame
 
 from room import Room
 from thing import Thing
-from monster import Monster, SlowMonster, FastMonster
+from monster import Monster, AlwaysFollowingMonster, FollowingOnSightMonster
 from player import Player
 
 pygame.init()
 
 r = Room(20, 40, 30)
 p = Player(r, 1, 1)
-SlowMonster(r, 39, 29, p)
+AlwaysFollowingMonster(r, 39, 29, p)
 
 screen = pygame.display.set_mode(r.canvas_size())
 

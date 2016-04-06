@@ -11,19 +11,23 @@ class Monster(Thing):
         self.player = player
         self.speed = 1
         
-    def _step(self):
-        nx, ny = 0, 0
-        if self.x != self.player.x and self.y == self.player.y:
+    def followPlayer(self):
+        if self.y == self.player.y and self.player.x == self.x:
+            return
+
+        if self.y == self.player.y:
             if self.player.x > self.x:
                 nx = self.x + self.speed
             else:
                 nx = self.x - self.speed
-        elif self.x == self.player.x and self.y != self.player.y:
+
+        elif self.x == self.player.x:
             if self.player.y > self.y:
                 ny = self.y + self.speed
             else:
                 ny = self.y - self.speed
-        elif self.x != self.player.x and self.y != self.player.y:
+
+        else:
             if random.randrange(2):
                 if self.player.x > self.x:
                     nx = self.x + self.speed
@@ -34,10 +38,11 @@ class Monster(Thing):
                     ny = self.y + self.speed
                 else:
                     ny = self.y - self.speed
-        self.move_to(nx, ny)        
+
+        self.move_to(nx, ny)
 
 
-class FastMonster(Monster):
+class FollowingOnSightMonster(Monster):
     def __init__(self, room, x=0, y=0, player=None):
         super().__init__(room, x, y, player)
 
@@ -50,13 +55,13 @@ class FastMonster(Monster):
             dy = self.player.y - self.y
             if dx**2 + dy**2 <= self.player.vision**2:
                 self.trackingPlayer = True
-                self._step()
+                self.followPlayer()
             else:
                 self.trackingPlayer = False
 
 
 
-class SlowMonster(Monster):
+class AlwaysFollowingMonster(Monster):
     def __init__(self, room, x=0, y=0, player=None):
         super().__init__(room, x, y, player)
 
@@ -65,4 +70,4 @@ class SlowMonster(Monster):
 
     def step(self):
         if self.player:
-            self._step()
+            self.followPlayer()
