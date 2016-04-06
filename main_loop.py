@@ -9,7 +9,7 @@ pygame.init()
 
 r = Room(20, 40, 30)
 p = Player(r, 1, 1)
-SlowMonster(r, 5, 5, p)
+SlowMonster(r, 39, 29, p)
 
 screen = pygame.display.set_mode(r.canvas_size())
 
