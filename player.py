@@ -13,7 +13,7 @@ class Player(Thing):
             pygame.K_DOWN:  (0, 1),
         }
 
-        self.vision = 3
+        self.vision = 10
 
     def move(self):
         keys = pygame.key.get_pressed()
