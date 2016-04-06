@@ -12,6 +12,7 @@ class Monster(Thing):
         self.speed = 1
         
     def followPlayer(self):
+        nx, ny = self.x, self.y
         if self.y == self.player.y and self.player.x == self.x:
             return
 
