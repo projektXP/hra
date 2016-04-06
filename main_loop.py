@@ -30,4 +30,4 @@ while True:
         screen.blit(img, r.abs_coords(thing.x, thing.y))
 
     pygame.display.flip()
-    pygame.time.wait(500)
+    pygame.time.wait(50)
