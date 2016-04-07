@@ -17,29 +17,21 @@ class Monster(Thing):
         if self.y == self.player.y and self.player.x == self.x:
             return
 
-        if self.y == self.player.y:
-            if self.player.x > self.x:
-                nx = self.x + self.speed
-            else:
-                nx = self.x - self.speed
+        if self.player.x > self.x:
+            nx = self.x + self.speed
+        elif self.player.x < self.x:
+            nx = self.x - self.speed
 
-        elif self.x == self.player.x:
-            if self.player.y > self.y:
-                ny = self.y + self.speed
-            else:
-                ny = self.y - self.speed
+        if self.player.y > self.y:
+            ny = self.y + self.speed
+        elif self.player.y < self.y:
+            ny = self.y - self.speed
 
-        else:
+        if self.x != nx and self.y != ny:
             if random.randrange(2):
-                if self.player.x > self.x:
-                    nx = self.x + self.speed
-                else:
-                    nx = self.x - self.speed
+                nx = self.x
             else:
-                if self.player.y > self.y:
-                    ny = self.y + self.speed
-                else:
-                    ny = self.y - self.speed
+                ny = self.y
 
         self.move_to(nx, ny)
 

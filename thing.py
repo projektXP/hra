@@ -20,7 +20,7 @@ class Thing:
     def distance(self, other):
         dx = other.x - self.x
         dy = other.y - self.y
-        return dx + dy
+        return abs(dx) + abs(dy)
 
     def draw(self):
         return self.canvas
