@@ -1,5 +1,6 @@
 import pygame
 
+from item import SpeedBoost, Fog
 from room import Room
 from thing import Thing
 from monster import Monster
@@ -9,6 +10,9 @@ pygame.init()
 
 r = Room(20)
 r.load_from_file("level.map")
+
+SpeedBoost(r, 25, 15)
+Fog(r, 15, 15)
 
 screen = pygame.display.set_mode(r.canvas_size())
 

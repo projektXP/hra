@@ -1,4 +1,5 @@
 from thing import Thing
+from item import Item
 import pygame
 
 
@@ -13,10 +14,23 @@ class Player(Thing):
             pygame.K_DOWN:  (0, 1),
         }
 
+        self.speed = 1
         self.vision = 10
+
+    def can_move_to(self, x, y):
+        return 0 <= x < self.room.width and 0 <= y < self.room.height and \
+               (self.room.map[y][x] is None or isinstance(self.room.map[y][x], Item))
+
+    def move_to(self, x, y):
+        if self.can_move_to(x, y) and isinstance(self.room.map[y][x], Item):
+            self.room.map[y][x].use(self)
+        super().move_to(x, y)
 
     def move(self):
         keys = pygame.key.get_pressed()
         for key in self.movements:
             if keys[key]:
-                self.move_to(self.x + self.movements[key][0], self.y + self.movements[key][1])
+                self.move_to(
+                    self.x + self.movements[key][0]*self.speed,
+                    self.y + self.movements[key][1]*self.speed
+                )

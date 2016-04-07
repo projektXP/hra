@@ -23,9 +23,6 @@ class Room:
                 if isinstance(thing, classname):
                     yield thing
 
-    def can_move_to(self, x, y):
-        return 0 <= x < self.width and 0 <= y < self.height and self.map[y][x] is None
-
     def load_from_file(self, filename):
         self.map = []
         char_to_thing = {

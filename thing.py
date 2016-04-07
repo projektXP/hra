@@ -10,8 +10,11 @@ class Thing(metaclass=ABCMeta):
 
         self.canvas = pygame.Surface((room.square_size, room.square_size))
 
+    def can_move_to(self, x, y):
+        return 0 <= x < self.room.width and 0 <= y < self.room.height and self.room.map[y][x] is None
+
     def move_to(self, x, y):
-        if not self.room.can_move_to(x, y):
+        if not self.can_move_to(x, y):
             return
         self.room.map[self.y][self.x] = None
         self.room.map[y][x] = self
