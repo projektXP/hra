@@ -63,9 +63,7 @@ class Zombie(Monster):
 
     def step(self):
         if self.player:
-            dx = self.player.x - self.x
-            dy = self.player.y - self.y
-            if dx**2 + dy**2 <= self.player.vision**2:
+            if self.distance(self.player) <= self.player.vision:
                 self.tracking_player = True
                 self.follow_player()
             else:
@@ -81,8 +79,6 @@ class Vampire(Monster):
 
     def step(self):
         if self.player:
-            dx = self.player.x - self.x
-            dy = self.player.y - self.y
-            if self.tracking_player or dx**2 + dy**2 <= self.player.vision**2:
+            if self.tracking_player or self.distance(self.player) <= self.player.vision:
                 self.tracking_player = True
                 self.follow_player()
