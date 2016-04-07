@@ -17,6 +17,11 @@ class Thing:
         self.room.map[y][x] = self
         self.x, self.y = x, y
 
+    def distance(self, other):
+        dx = other.x - self.x
+        dy = other.y - self.y
+        return abs(dx) + abs(dy)
+
     def draw(self):
         return self.canvas
 
