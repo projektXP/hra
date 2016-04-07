@@ -4,6 +4,7 @@ from room import Room
 from thing import Thing
 from player import Player
 
+
 class Monster(Thing):
     def __init__(self, room: Room, x=0, y=0, player: Player = None):
         super().__init__(room, x, y)
@@ -11,7 +12,7 @@ class Monster(Thing):
         self.player = player
         self.speed = 1
         
-    def followPlayer(self):
+    def follow_player(self):
         nx, ny = self.x, self.y
         if self.y == self.player.y and self.player.x == self.x:
             return
@@ -43,50 +44,45 @@ class Monster(Thing):
         self.move_to(nx, ny)
 
 
-
-class AlwaysFollowingMonster(Monster):
+class Hunter(Monster):
     def __init__(self, room, x=0, y=0, player=None):
         super().__init__(room, x, y, player)
         self.canvas.fill((0, 255, 0))
 
-        self.fast = False
-        self.trackingPlayer = True
-
     def step(self):
         if self.player:
-            self.followPlayer()
+            self.follow_player()
 
 
-
-class FollowingOnSightOnlyMonster(Monster):
+class Zombie(Monster):
     def __init__(self, room, x=0, y=0, player=None):
         super().__init__(room, x, y, player)
         self.canvas.fill((0, 128, 0))
 
-        self.fast = True
-        self.trackingPlayer = False
+        self.tracking_player = False
 
     def step(self):
         if self.player:
             dx = self.player.x - self.x
             dy = self.player.y - self.y
             if dx**2 + dy**2 <= self.player.vision**2:
-                self.trackingPlayer = True
-                self.followPlayer()
+                self.tracking_player = True
+                self.follow_player()
             else:
-                self.trackingPlayer = False
+                self.tracking_player = False
 
 
-
-class OnceOnSightFollowingMonster(FollowingOnSightOnlyMonster):
+class Vampire(Monster):
     def __init__(self, room, x=0, y=0, player=None):
         super().__init__(room, x, y, player)
         self.canvas.fill((255, 255, 0))
+
+        self.tracking_player = False
 
     def step(self):
         if self.player:
             dx = self.player.x - self.x
             dy = self.player.y - self.y
-            if self.trackingPlayer or dx**2 + dy**2 <= self.player.vision**2:
-                self.trackingPlayer = True
-                self.followPlayer()
+            if self.tracking_player or dx**2 + dy**2 <= self.player.vision**2:
+                self.tracking_player = True
+                self.follow_player()
