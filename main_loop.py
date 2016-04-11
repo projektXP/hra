@@ -2,21 +2,13 @@ import pygame
 
 from room import Room
 from thing import Thing
-from monster import Monster, Hunter, Zombie, Vampire
+from monster import Monster
 
 
 pygame.init()
 
 r = Room(20)
 r.load_from_file("level.map")
-
-Hunter(r, 39, 29)
-Zombie(r, 0, 29)
-Vampire(r, 20, 29)
-Hunter(r, 39, 10)
-Zombie(r, 0, 10)
-Vampire(r, 20, 10)
-
 
 screen = pygame.display.set_mode(r.canvas_size())
 
