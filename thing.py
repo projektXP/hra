@@ -1,7 +1,8 @@
 import pygame
+from abc import ABCMeta
 
 
-class Thing:
+class Thing(metaclass=ABCMeta):
     def __init__(self, room, x=0, y=0):
         self.x = x
         self.y = y

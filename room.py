@@ -24,10 +24,7 @@ class Room:
                     yield thing
 
     def can_move_to(self, x, y):
-        try:
-            return 0 <= x < self.width and 0 <= y < self.height and self.map[y][x] is None
-        except IndexError:
-            print(x, y)
+        return 0 <= x < self.width and 0 <= y < self.height and self.map[y][x] is None
 
     def load_from_file(self, filename):
         self.map = []
@@ -39,24 +36,30 @@ class Room:
             'Z': Zombie,
         }
         col_count = 0
-        for y, line in enumerate(open(filename)):
-            line = line.strip()
-            if y == 0:
-                col_count = len(line)
-            elif col_count != len(line):
-                raise RuntimeError("invalid input file: jagged lines")
+        with open(filename) as f:
+            for y, line in enumerate(f):
+                line = line.strip()
 
-            this_row = []
-            for x, ch in enumerate(line):
-                if ch not in char_to_thing:
-                    raise RuntimeError("invalid input file: character {} not mapped to any object".format(ch))
+                if y == 0:
+                    col_count = len(line)
+                elif col_count != len(line):
+                    raise RuntimeError("invalid input file: jagged lines")
 
-                thing = char_to_thing[ch](self, x, y)
-                if isinstance(thing, Player):
-                    self.player = thing
-                this_row.append(thing)
+                this_row = []
+                for x, ch in enumerate(line):
+                    if ch not in char_to_thing:
+                        raise RuntimeError("invalid input file: character '{}' not mapped to any object".format(ch))
 
-            self.map.append(this_row)
+                    thing = char_to_thing[ch](self, x, y)
+                    if isinstance(thing, Player):
+                        if self.player is not None:
+                            raise RuntimeError("player already present in room")
+                        self.player = thing
+                    this_row.append(thing)
 
+                self.map.append(this_row)
+
+        if self.player is None:
+            raise RuntimeError("no player present in room")
         self.height = len(self.map)
         self.width = col_count
