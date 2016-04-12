@@ -14,6 +14,7 @@ class Player(Thing):
         }
 
         self.vision = 10
+        self.health = 100
 
     def move(self):
         keys = pygame.key.get_pressed()
