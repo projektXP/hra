@@ -8,7 +8,7 @@ from monster import Monster
 pygame.init()
 
 r = Room(20)
-r.load_from_file("level.map")
+r.load_from_file("level_attack.map")
 
 screen = pygame.display.set_mode(r.canvas_size())
 
