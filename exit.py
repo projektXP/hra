@@ -1,9 +1,9 @@
 import pygame
 from thing import Thing
 
-class Wall(Thing):
-    def __init__(self, room, x, y, nameOfPic='wall'):
+class Exit(Thing):
 
+    def __init__(self, room, x, y, nameOfPic='exit'):
         super().__init__(room,x,y)
         self._address = self._retPicture(nameOfPic)
         self.drawPic()
@@ -18,4 +18,3 @@ class Wall(Thing):
         if self._address:
             image = pygame.image.load(self._address)
             self.canvas.blit(image,(0,0))
-

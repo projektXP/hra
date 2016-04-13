@@ -1,4 +1,4 @@
-import random
+import random, pygame
 
 from moving_thing import MovingThing
 from abc import ABCMeta, abstractmethod
@@ -42,7 +42,10 @@ class Monster(MovingThing, metaclass=ABCMeta):
 class Hunter(Monster):
     def __init__(self, room, x=0, y=0):
         super().__init__(room, x, y)
-        self.canvas.fill((0, 255, 0))
+        self.canvas.fill((127, 127, 127))
+
+        image = pygame.image.load(self.dictOfPic['hunter'])
+        self.canvas.blit(image,(0,0))
 
         self.speed = 0.15 + round(random.randrange(7) / 100, 2)
 
@@ -54,7 +57,9 @@ class Hunter(Monster):
 class Zombie(Monster):
     def __init__(self, room, x=0, y=0):
         super().__init__(room, x, y)
-        self.canvas.fill((0, 128, 0))
+        self.canvas.fill((127, 127, 127))
+        image = pygame.image.load(self.dictOfPic['zombie'])
+        self.canvas.blit(image,(0,0))
 
         self.tracking_player = False
         self.speed = 0.1 + round(random.randrange(3) / 100, 2)
@@ -71,7 +76,9 @@ class Zombie(Monster):
 class Vampire(Monster):
     def __init__(self, room, x=0, y=0):
         super().__init__(room, x, y)
-        self.canvas.fill((255, 255, 0))
+        self.canvas.fill((127, 127, 127))
+        image = pygame.image.load(self.dictOfPic['vampire'])
+        self.canvas.blit(image,(0,0))
 
         self.tracking_player = False
         self.speed = 0.1 + round(random.randrange(5) / 100, 2)

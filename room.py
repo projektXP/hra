@@ -1,7 +1,9 @@
 from player import Player
 from monster import Vampire, Hunter, Zombie
 from item import SpeedBoost, Fog
-
+from wall import Wall
+from exit import Exit
+from start import Start
 
 class Room:
     def __init__(self, square_size, width=0, height=0):
@@ -9,6 +11,7 @@ class Room:
         self.square_size = square_size
         self.width = width
         self.height = height
+
         self.player = None
         self.map = [[None] * width for x in range(height)]
 
@@ -34,6 +37,9 @@ class Room:
             'Z': Zombie,
             's': SpeedBoost,
             'f': Fog,
+            '#': Wall,
+            'E': Exit,
+            'S': Start,
         }
         col_count = 0
         with open(filename) as f:
@@ -55,6 +61,7 @@ class Room:
                         if self.player is not None:
                             raise RuntimeError("player already present in room")
                         self.player = thing
+
                     this_row.append(thing)
 
                 self.map.append(this_row)
