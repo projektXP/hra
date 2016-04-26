@@ -1,16 +1,10 @@
 import random
 
-from thing import Thing
+from moving_thing import MovingThing
 from abc import ABCMeta, abstractmethod
 
 
-class Monster(Thing, metaclass=ABCMeta):
-    def __init__(self, room, x=0, y=0):
-        super().__init__(room, x, y)
-
-        self.speed = 1
-        self.vision = 10
-        
+class Monster(MovingThing, metaclass=ABCMeta):
     def follow_player(self):
         nx, ny = self.x, self.y
         if self.y == self.room.player.y and self.room.player.x == self.x:
