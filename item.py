@@ -1,6 +1,9 @@
 from thing import Thing
+from abc import ABCMeta, abstractmethod
 
-class Item(Thing):
+
+class Item(Thing, metaclass=ABCMeta):
+    @abstractmethod
     def use(self, player):
         pass
 

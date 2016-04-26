@@ -1,5 +1,6 @@
 from player import Player
 from monster import Vampire, Hunter, Zombie
+from item import SpeedBoost, Fog
 
 
 class Room:
@@ -31,6 +32,8 @@ class Room:
             'V': Vampire,
             'H': Hunter,
             'Z': Zombie,
+            's': SpeedBoost,
+            'f': Fog,
         }
         col_count = 0
         with open(filename) as f:

@@ -11,9 +11,6 @@ pygame.init()
 r = Room(20)
 r.load_from_file("level.map")
 
-SpeedBoost(r, 25, 15)
-Fog(r, 15, 15)
-
 screen = pygame.display.set_mode(r.canvas_size())
 
 while True:

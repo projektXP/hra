@@ -9,6 +9,7 @@ class Monster(Thing, metaclass=ABCMeta):
         super().__init__(room, x, y)
 
         self.speed = 1
+        self.vision = 10
         
     def follow_player(self):
         nx, ny = self.x, self.y
@@ -57,7 +58,7 @@ class Zombie(Monster):
 
     def step(self):
         if self.room.player:
-            if self.distance(self.room.player) <= self.room.player.vision:
+            if self.distance(self.room.player) <= self.vision:
                 self.tracking_player = True
                 self.follow_player()
             else:
@@ -73,6 +74,6 @@ class Vampire(Monster):
 
     def step(self):
         if self.room.player:
-            if self.tracking_player or self.distance(self.room.player) <= self.room.player.vision:
+            if self.tracking_player or self.distance(self.room.player) <= self.vision:
                 self.tracking_player = True
                 self.follow_player()
