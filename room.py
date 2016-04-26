@@ -1,5 +1,6 @@
 from player import Player
 from monster import Vampire, Hunter, Zombie
+from item import SpeedBoost, Fog
 
 
 class Room:
@@ -23,9 +24,6 @@ class Room:
                 if isinstance(thing, classname):
                     yield thing
 
-    def can_move_to(self, x, y):
-        return 0 <= x < self.width and 0 <= y < self.height and self.map[y][x] is None
-
     def load_from_file(self, filename):
         self.map = []
         char_to_thing = {
@@ -34,6 +32,8 @@ class Room:
             'V': Vampire,
             'H': Hunter,
             'Z': Zombie,
+            's': SpeedBoost,
+            'f': Fog,
         }
         col_count = 0
         with open(filename) as f:

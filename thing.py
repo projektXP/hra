@@ -10,12 +10,8 @@ class Thing(metaclass=ABCMeta):
 
         self.canvas = pygame.Surface((room.square_size, room.square_size))
 
-    def move_to(self, x, y):
-        if not self.room.can_move_to(x, y):
-            return
-        self.room.map[self.y][self.x] = None
-        self.room.map[y][x] = self
-        self.x, self.y = x, y
+    def get_relative_position_to_draw(self):
+        return self.x, self.y
 
     def distance(self, other):
         dx = other.x - self.x
@@ -25,3 +21,12 @@ class Thing(metaclass=ABCMeta):
     def draw(self):
         return self.canvas
 
+
+class Shadow(Thing):
+    """
+    Placeholder class, destination of moving things.
+    Ensures that only one moving-thing will start to move to one destination.
+    """
+    def __init__(self, room, x=0, y=0):
+        super().__init__(room, x, y)
+        self.canvas = pygame.Surface((0, 0))
