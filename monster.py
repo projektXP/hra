@@ -11,14 +11,14 @@ class Monster(MovingThing, metaclass=ABCMeta):
             return
 
         if self.room.player.x > self.x:
-            nx = self.x + self.speed
+            nx = self.x + 1
         elif self.room.player.x < self.x:
-            nx = self.x - self.speed
+            nx = self.x - 1
 
         if self.room.player.y > self.y:
-            ny = self.y + self.speed
+            ny = self.y + 1
         elif self.room.player.y < self.y:
-            ny = self.y - self.speed
+            ny = self.y - 1
 
         if self.x != nx and self.y != ny:
             if random.randrange(2):
@@ -26,10 +26,16 @@ class Monster(MovingThing, metaclass=ABCMeta):
             else:
                 ny = self.y
 
-        self.move_to(nx, ny)
+        self.start_moving(nx, ny)
+
+    def step(self):
+        if self.moving:
+            self.move_a_bit()
+        if not self.moving:
+            self.think()
 
     @abstractmethod
-    def step(self):
+    def think(self):
         pass
 
 
@@ -38,7 +44,7 @@ class Hunter(Monster):
         super().__init__(room, x, y)
         self.canvas.fill((0, 255, 0))
 
-    def step(self):
+    def think(self):
         if self.room.player:
             self.follow_player()
 
@@ -50,7 +56,7 @@ class Zombie(Monster):
 
         self.tracking_player = False
 
-    def step(self):
+    def think(self):
         if self.room.player:
             if self.distance(self.room.player) <= self.vision:
                 self.tracking_player = True
@@ -66,7 +72,7 @@ class Vampire(Monster):
 
         self.tracking_player = False
 
-    def step(self):
+    def think(self):
         if self.room.player:
             if self.tracking_player or self.distance(self.room.player) <= self.vision:
                 self.tracking_player = True

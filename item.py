@@ -10,7 +10,7 @@ class Item(Thing, metaclass=ABCMeta):
 
 class SpeedBoost(Item):
     def use(self, player):
-        player.speed = 2
+        player.speed *= 2
 
 
 class Fog(Item):
