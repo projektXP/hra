@@ -14,7 +14,6 @@ class Game:
 
     def loop(self):
         pygame.init()
-
         r = Room(self, 32)
         r.load_from_file("level.map")
 
