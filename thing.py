@@ -8,7 +8,7 @@ class Thing(metaclass=ABCMeta):
         self.y = y
         self.room = room
 
-        self.canvas = pygame.Surface((room.square_size, room.square_size))
+        self.canvas = None
         self.set_image()
 
     @abstractmethod
@@ -33,4 +33,4 @@ class Shadow(Thing):
     Ensures that only one moving-thing will start to move to one destination.
     """
     def set_image(self):
-        pass
+        self.canvas = pygame.Surface((0, 0))
