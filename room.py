@@ -1,6 +1,7 @@
 from player import Player
 from monster import Vampire, Hunter, Zombie
 from item import SpeedBoost, Fog
+from stationary_things import Wall, Exit, Start
 
 
 class Room:
@@ -9,6 +10,7 @@ class Room:
         self.square_size = square_size
         self.width = width
         self.height = height
+
         self.player = None
         self.map = [[None] * width for x in range(height)]
 
@@ -34,6 +36,9 @@ class Room:
             'Z': Zombie,
             's': SpeedBoost,
             'f': Fog,
+            '#': Wall,
+            'E': Exit,
+            'S': Start,
         }
         col_count = 0
         with open(filename) as f:
@@ -55,6 +60,7 @@ class Room:
                         if self.player is not None:
                             raise RuntimeError("player already present in room")
                         self.player = thing
+
                     this_row.append(thing)
 
                 self.map.append(this_row)

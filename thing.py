@@ -1,5 +1,5 @@
 import pygame
-from abc import ABCMeta
+from abc import ABCMeta, abstractmethod
 
 
 class Thing(metaclass=ABCMeta):
@@ -8,7 +8,12 @@ class Thing(metaclass=ABCMeta):
         self.y = y
         self.room = room
 
-        self.canvas = pygame.Surface((room.square_size, room.square_size))
+        self.canvas = None
+        self.set_image()
+
+    @abstractmethod
+    def set_image(self):
+        pass
 
     def get_relative_position_to_draw(self):
         return self.x, self.y
@@ -27,6 +32,5 @@ class Shadow(Thing):
     Placeholder class, destination of moving things.
     Ensures that only one moving-thing will start to move to one destination.
     """
-    def __init__(self, room, x=0, y=0):
-        super().__init__(room, x, y)
+    def set_image(self):
         self.canvas = pygame.Surface((0, 0))
