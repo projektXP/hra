@@ -1,5 +1,5 @@
 import pygame
-from abc import ABCMeta
+from abc import ABCMeta, abstractmethod
 
 
 class Thing(metaclass=ABCMeta):
@@ -7,16 +7,13 @@ class Thing(metaclass=ABCMeta):
         self.x = x
         self.y = y
         self.room = room
-        self.room.map[y][x] = self
-        self.passable = False
 
         self.canvas = pygame.Surface((room.square_size, room.square_size))
-        self.dictOfPic = dict()
-        arrayKey = ['wall','hunter','vampire','zombie','floor','start','player','exit']
-        arrayPic =['pictures/wall.png','pictures/hunter.png','pictures/vampire.png','pictures/zombie.png',
-                   'pictures/floor.png','pictures/start.png','pictures/player.png','pictures/exit.png']
-        for i in range(len(arrayKey)):
-            self.dictOfPic[arrayKey[i]] = arrayPic[i]
+        self.set_image()
+
+    @abstractmethod
+    def set_image(self):
+        pass
 
     def get_relative_position_to_draw(self):
         return self.x, self.y

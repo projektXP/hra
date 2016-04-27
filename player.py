@@ -6,9 +6,6 @@ import pygame
 class Player(MovingThing):
     def __init__(self, room, x=0, y=0):
         super().__init__(room, x, y)
-        self.canvas.fill((127, 127, 127))
-        image = pygame.image.load(self.dictOfPic['player'])
-        self.canvas.blit(image,(0,0))
         self.movements = {
             pygame.K_LEFT:  (-1, 0),
             pygame.K_RIGHT: (1, 0),
@@ -37,3 +34,6 @@ class Player(MovingThing):
                         self.x + self.movements[key][0],
                         self.y + self.movements[key][1],
                     )
+
+    def set_image(self):
+        self.canvas = pygame.image.load('pictures/player.png')
