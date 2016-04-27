@@ -8,7 +8,8 @@ from utils import directions
 
 
 class Room:
-    def __init__(self, square_size, width=0, height=0):
+    def __init__(self, game, square_size, width=0, height=0):
+        self.game = game
         # screen is divided into squares size x size
         self.square_size = square_size
         self.width = width
