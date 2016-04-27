@@ -1,9 +1,8 @@
 from player import Player
 from monster import Vampire, Hunter, Zombie
 from item import SpeedBoost, Fog
-from wall import Wall
-from exit import Exit
-from start import Start
+from stationary_things import Wall, Exit, Start
+
 
 class Room:
     def __init__(self, square_size, width=0, height=0):
