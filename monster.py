@@ -44,6 +44,8 @@ class Hunter(Monster):
         super().__init__(room, x, y)
         self.canvas.fill((0, 255, 0))
 
+        self.speed = 0.15 + round(random.randrange(7) / 100, 2)
+
     def think(self):
         if self.room.player:
             self.follow_player()
@@ -55,6 +57,7 @@ class Zombie(Monster):
         self.canvas.fill((0, 128, 0))
 
         self.tracking_player = False
+        self.speed = 0.1 + round(random.randrange(3) / 100, 2)
 
     def think(self):
         if self.room.player:
@@ -71,6 +74,7 @@ class Vampire(Monster):
         self.canvas.fill((255, 255, 0))
 
         self.tracking_player = False
+        self.speed = 0.1 + round(random.randrange(5) / 100, 2)
 
     def think(self):
         if self.room.player:
