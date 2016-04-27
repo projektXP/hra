@@ -18,10 +18,9 @@ class MovingThing(Thing, metaclass=ABCMeta):
     def get_relative_position_to_draw(self):
         if not self.moving:
             return self.x, self.y
-        else:
-            rel_x = self.x + (self.destination.x - self.x) * self.moving_progress
-            rel_y = self.y + (self.destination.y - self.y) * self.moving_progress
-            return rel_x, rel_y
+        rel_x = self.x + (self.destination.x - self.x) * self.moving_progress
+        rel_y = self.y + (self.destination.y - self.y) * self.moving_progress
+        return rel_x, rel_y
 
     @classmethod
     def class_can_move_to(cls, x, y, room):

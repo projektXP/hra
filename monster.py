@@ -7,6 +7,13 @@ from utils import directions
 
 
 class Monster(MovingThing, metaclass=ABCMeta):
+    def __init__(self, room, x=0, y=0):
+        super().__init__(room, x, y)
+        self.attacking = False
+        self.attack_start = None
+        self.attack_time = None
+        self.damage = None
+
     def follow_player(self):
         neighbours = [(x, y) for x, y in directions(self.x, self.y) if self.room.tracking_map[y][x] is not None]
         if neighbours:
@@ -19,12 +26,31 @@ class Monster(MovingThing, metaclass=ABCMeta):
     def step(self):
         if self.moving:
             self.move_a_bit()
-        if not self.moving:
+        elif self.attacking:
+            self.attack_a_bit()
+        if not self.moving and not self.attacking:
             self.think()
 
     @abstractmethod
     def think(self):
         pass
+
+    def start_attacking(self):
+        if self.attacking:
+            return
+
+        self.attacking = True
+        self.attack_start = self.room.game.time
+
+    def can_attack(self):
+        return (abs(self.room.player.x - self.x) == 1 and abs(self.room.player.y - self.y) == 0 or
+                abs(self.room.player.x - self.x) == 0 and abs(self.room.player.y - self.y) == 1)
+
+    def attack_a_bit(self):
+        if self.room.game.time - self.attack_start == self.attack_time:
+            self.room.player.take_damage(self.damage)
+            self.attack_start = None
+            self.attacking = False
 
 
 class Hunter(Monster):
@@ -35,10 +61,15 @@ class Hunter(Monster):
         self.canvas = pygame.image.load('pictures/hunter.png')
 
         self.speed = 0.15 + round(random.randrange(7) / 100, 2)
+        self.damage = 5
+        self.attack_time = 10
 
     def think(self):
         if self.room.player:
-            self.follow_player()
+            if self.can_attack():
+                self.start_attacking()
+            else:
+                self.follow_player()
 
 
 class Zombie(Monster):
@@ -47,13 +78,17 @@ class Zombie(Monster):
 
         self.tracking_player = False
         self.speed = 0.1 + round(random.randrange(3) / 100, 2)
+        self.damage = 10
+        self.attack_time = 20
 
     def set_image(self):
         self.canvas = pygame.image.load('pictures/zombie.png')
 
     def think(self):
         if self.room.player:
-            if self.distance(self.room.player) <= self.vision:
+            if self.can_attack():
+                self.start_attacking()
+            elif self.distance(self.room.player) <= self.vision:
                 self.tracking_player = True
                 self.follow_player()
             else:
@@ -65,12 +100,16 @@ class Vampire(Monster):
         super().__init__(room, x, y)
         self.tracking_player = False
         self.speed = 0.1 + round(random.randrange(5) / 100, 2)
+        self.damage = 15
+        self.attack_time = 15
 
     def set_image(self):
         self.canvas = pygame.image.load('pictures/vampire.png')
 
     def think(self):
         if self.room.player:
-            if self.tracking_player or self.distance(self.room.player) <= self.vision:
+            if self.can_attack():
+                self.start_attacking()
+            elif self.tracking_player or self.distance(self.room.player) <= self.vision:
                 self.tracking_player = True
                 self.follow_player()

@@ -1,6 +1,7 @@
 from moving_thing import MovingThing
 from item import Item
 import pygame
+import sys
 
 
 class Player(MovingThing):
@@ -12,6 +13,7 @@ class Player(MovingThing):
             pygame.K_UP:    (0, -1),
             pygame.K_DOWN:  (0, 1),
         }
+        self.health = 100
 
     @classmethod
     def class_can_move_to(cls, x, y, room):
@@ -39,3 +41,14 @@ class Player(MovingThing):
 
     def set_image(self):
         self.canvas = pygame.image.load('pictures/player.png')
+
+    def take_damage(self, damage):
+        self.health -= damage
+        print(self.room.game.time, self.health, file=sys.stderr)
+        if self.health <= 0:
+            self.die()
+
+    def die(self):
+        print("Game Over!")
+        self.canvas.fill((64, 64, 64))
+        self.room.game.looping = False
