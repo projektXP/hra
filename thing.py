@@ -3,6 +3,8 @@ from abc import ABCMeta, abstractmethod
 
 
 class Thing(metaclass=ABCMeta):
+    passable = False
+
     def __init__(self, room, x=0, y=0):
         self.x = x
         self.y = y

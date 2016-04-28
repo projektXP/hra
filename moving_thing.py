@@ -24,7 +24,9 @@ class MovingThing(Thing, metaclass=ABCMeta):
             return rel_x, rel_y
 
     def can_move_to(self, x, y):
-        return 0 <= x < self.room.width and 0 <= y < self.room.height and self.room.map[y][x] is None
+        return 0 <= x < self.room.width and 0 <= y < self.room.height and \
+               (self.room.dynamic_map[y][x] is None or self.room.dynamic_map[y][x].passable) and \
+               (self.room.static_map[y][x] is None or self.room.static_map[y][x].passable)
 
     def start_moving(self, x, y):
         """
@@ -40,7 +42,7 @@ class MovingThing(Thing, metaclass=ABCMeta):
         self.moving = True
         self.destination = Point(x, y)
         self.moving_progress = 0
-        self.room.map[y][x] = Shadow(self.room, x, y)
+        self.room.dynamic_map[y][x] = Shadow(self.room, x, y)
 
     def move_a_bit(self):
         """
@@ -49,8 +51,8 @@ class MovingThing(Thing, metaclass=ABCMeta):
         self.moving_progress += self.speed
 
         if self.moving_progress >= 1:
-            self.room.map[self.y][self.x] = None
-            self.room.map[self.destination.y][self.destination.x] = self
+            self.room.dynamic_map[self.y][self.x] = None
+            self.room.dynamic_map[self.destination.y][self.destination.x] = self
             self.x, self.y = self.destination.x, self.destination.y
 
             self.moving = False

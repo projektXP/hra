@@ -17,15 +17,19 @@ while True:
         if event.type == pygame.QUIT:
             exit()
 
-    for monster in r.things_of_class(Monster):
+    for monster in r.things_of_class(Monster, static_map=False):
         monster.step()
 
     r.player.step()
 
     screen.fill((127, 127, 127))
 
-    for thing in r.things_of_class(Thing):
+    for thing in r.things_of_class(Thing, static_map=True):
+        img = thing.draw()
+        thing_x, thing_y = thing.get_relative_position_to_draw()
+        screen.blit(img, r.abs_coords(thing_x, thing_y))
 
+    for thing in r.things_of_class(Thing, static_map=False):
         img = thing.draw()
         thing_x, thing_y = thing.get_relative_position_to_draw()
         screen.blit(img, r.abs_coords(thing_x, thing_y))
