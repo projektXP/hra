@@ -44,7 +44,6 @@ class Room:
         }
 
         char_to_thing_dynamic = {
-            'P': Player,
             'V': Vampire,
             'H': Hunter,
             'Z': Zombie,
@@ -70,14 +69,17 @@ class Room:
                         thing = char_to_thing_static[ch](self, x, y)
                         this_row_static.append(thing)
                         this_row_dynamic.append(None)
+
+                        if isinstance(thing, Start):
+                            if self.player is not None:
+                                raise RuntimeError("starting position already present in room")
+                            self.player = Player(self, x, y)
+                            this_row_dynamic[-1] = self.player
+
                     elif ch in char_to_thing_dynamic:
                         thing = char_to_thing_dynamic[ch](self, x, y)
                         this_row_dynamic.append(thing)
                         this_row_static.append(Floor(self, x, y))
-                        if isinstance(thing, Player):
-                            if self.player is not None:
-                                raise RuntimeError("player already present in room")
-                            self.player = thing
                     else:
                         raise RuntimeError("invalid input file: character '{}' not mapped to any object".format(ch))
 
@@ -85,6 +87,6 @@ class Room:
                 self.dynamic_map.append(this_row_dynamic)
 
         if self.player is None:
-            raise RuntimeError("no player present in room")
+            raise RuntimeError("no starting position present in room")
         self.height = len(self.static_map)
         self.width = col_count
