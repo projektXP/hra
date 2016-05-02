@@ -14,8 +14,7 @@ class SpeedBoost(Item):
         player.speed *= 2
 
     def set_image(self):
-        self.canvas = pygame.Surface((self.room.square_size, self.room.square_size))
-        self.canvas.fill((0, 0, 255))
+        self.canvas = pygame.image.load('pictures/speed.png')
 
 
 class Fog(Item):
@@ -23,5 +22,4 @@ class Fog(Item):
         player.vision = 5
 
     def set_image(self):
-        self.canvas = pygame.Surface((self.room.square_size, self.room.square_size))
-        self.canvas.fill((255, 0, 0))
+        self.canvas = pygame.image.load('pictures/fog.png')
