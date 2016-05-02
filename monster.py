@@ -57,12 +57,12 @@ class Hunter(Monster):
     def __init__(self, room, x=0, y=0):
         super().__init__(room, x, y)
 
-    def set_image(self):
-        self.canvas = pygame.image.load('pictures/hunter.png')
-
         self.speed = 0.15 + round(random.randrange(7) / 100, 2)
         self.damage = 5
         self.attack_time = 10
+
+    def set_image(self):
+        self.canvas = pygame.image.load('pictures/hunter.png')
 
     def think(self):
         if self.room.player:
