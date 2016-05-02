@@ -1,4 +1,5 @@
 import pygame
+import os
 
 from room import Room
 from thing import Thing
@@ -14,19 +15,18 @@ class Game:
         self.font = None
 
         self.loop()
-        input()
 
     def loop(self):
         pygame.init()
         self.room = Room(self, 32)
-        self.room.load_from_file("level.map")
+        self.room.load_from_file(os.path.join("map-files", "level.map"))
 
         self.screen = pygame.display.set_mode(self.room.canvas_size())
 
-        font_path = pygame.font.match_font("YouMurderer BB")
+        font_path = os.path.join("fonts", "youmurdererbb_reg.ttf")
         self.font = pygame.font.Font(font_path, 100)
 
-        while not self.over:
+        while True:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     exit()
@@ -34,8 +34,11 @@ class Game:
             for monster in self.room.things_of_class(Monster, static_map=False):
                 monster.step()
 
-            self.room.player.step()
-            self.room.update_tracking()
+            if not self.over:
+                self.room.player.step()
+                self.room.update_tracking()
+            elif pygame.key.get_pressed()[pygame.K_SPACE]:
+                break
 
             self.screen.fill((127, 127, 127))
 
