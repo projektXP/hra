@@ -44,11 +44,9 @@ class Player(MovingThing):
 
     def take_damage(self, damage):
         self.health -= damage
-        print(self.room.game.time, self.health, file=sys.stderr)
         if self.health <= 0:
             self.die()
 
     def die(self):
-        print("Game Over!")
         self.canvas.fill((64, 64, 64))
-        self.room.game.looping = False
+        self.room.game.over = True
