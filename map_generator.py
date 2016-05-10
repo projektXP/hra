@@ -14,6 +14,8 @@
 """
 
 import random
+from itertools import cycle
+from queue import Queue
 
 MIN_SUBROOM_DIMENSION = 4
 MIN_SPLITTABLE_SUBROOM_DIMENSION = 2 * MIN_SUBROOM_DIMENSION + 1
@@ -23,6 +25,12 @@ WALL_HORIZONTAL = 1
 WALL_CHARACTER = "#"
 EMPTY_CHARACTER = "."
 START_CHARACTER = "S"
+EXIT_CHARACTER = "E"
+VAMPIRE_CHARACTER = "V"
+ZOMBIE_CHARACTER = "Z"
+HUNTER_CHARACTER = "H"
+SPEED_CHARACTER = "s"
+FOG_CHARACTER = "f"
 
 
 def split_subroom_vertically(room_map, x, y, w, h):
@@ -82,7 +90,7 @@ def split_subroom_horizontally(room_map, x, y, w, h):
 def generate_subrooms(room_map, w, h):
     subrooms = []
 
-    # (top left x, y, width, height)
+    # (top left x, top left y, width, height)
     subroom_stack = [(1, 1, w - 2, h - 2)]
 
     while len(subroom_stack) != 0:
@@ -108,26 +116,54 @@ def generate_subrooms(room_map, w, h):
     return subrooms
 
 
-def generate_interior(room_map, x, y, w, h):
-    pass
+def generate_interior(room_map, w, h, subroom_count):
+    monster_count = subroom_count // 2
+    monster_order = [ZOMBIE_CHARACTER, ZOMBIE_CHARACTER, VAMPIRE_CHARACTER, ZOMBIE_CHARACTER,
+                    HUNTER_CHARACTER, VAMPIRE_CHARACTER]
+    for i, char in zip(range(monster_count), cycle(monster_order)):
+        x, y = find_random_unused_position(room_map, w, h)
+        room_map[y][x] = char
+
+    for char in [FOG_CHARACTER, SPEED_CHARACTER]:
+        x, y = find_random_unused_position(room_map, w, h)
+        room_map[y][x] = char
 
 
-def find_suitable_start_position(room_map, width, height):
+def find_random_unused_position(room_map, width, height):
     x, y = 0, 0
     while room_map[y][x] != EMPTY_CHARACTER:
         x, y = random.randint(0, width - 1), random.randint(0, height - 1)
     return x, y
 
 
-def find_suitable_exit_position(room_map):
-    pass
+def generate_exit_position(room_map, width, height, start_x, start_y):
+    """
+    At distant a place from start.
+    """
+    distance_map = [[-1 for x in range(width)] for y in range(height)]
+
+    q = Queue()
+    q.put((start_x, start_y))
+    distance_map[start_y][start_x] = 0
+
+    exit_x, exit_y = 0, 0
+
+    while not q.empty():
+        exit_x, exit_y = x, y = q.get()
+        for dx, dy in [(-1, 0), (0, -1), (1, 0), (0, 1)]:
+            nx, ny = x + dx, y + dy
+            if room_map[ny][nx] == EMPTY_CHARACTER and distance_map[ny][nx] == -1:
+                distance_map[ny][nx] = distance_map[y][x] + 1
+                q.put((nx, ny))
+
+    room_map[exit_y][exit_x] = EXIT_CHARACTER
 
 
 def generate_random_room():
     """
     Creates a 2D map of characters.
     """
-    width, height = 20, 20
+    width, height = 10 + random.randint(0, 20), 10 + random.randint(0, 10)
 
     room_map = [[WALL_CHARACTER for x in range(width)] for y in range(height)]
 
@@ -137,11 +173,12 @@ def generate_random_room():
 
     subrooms = generate_subrooms(room_map, width, height)
 
-    for subroom in subrooms:
-        generate_interior(room_map, *subroom)
-
-    start_x, start_y = find_suitable_start_position(room_map, width, height)
+    start_x, start_y = find_random_unused_position(room_map, width, height)
     room_map[start_y][start_x] = START_CHARACTER
+
+    generate_exit_position(room_map, width, height, start_x, start_y)
+
+    generate_interior(room_map, width, height, len(subrooms))
 
     return room_map
 
