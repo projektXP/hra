@@ -6,19 +6,16 @@
 
 2) Generate interiors of sub-rooms
     - monsters, items
-    - non-blocking walls
 
 3) Put start at random place
 
-4) Put exit at place that is far enough
+4) Put exit at place that is as far as it gets
 """
 
 import random
 from itertools import cycle
 from queue import Queue
 
-MIN_SUBROOM_DIMENSION = 4
-MIN_SPLITTABLE_SUBROOM_DIMENSION = 2 * MIN_SUBROOM_DIMENSION + 1
 WALL_VERTICAL = 0
 WALL_HORIZONTAL = 1
 
@@ -33,159 +30,160 @@ SPEED_CHARACTER = "s"
 FOG_CHARACTER = "f"
 
 
-def split_subroom_vertically(room_map, x, y, w, h):
-    wall_x = random.randint(x + MIN_SUBROOM_DIMENSION, x + w - 1 - MIN_SUBROOM_DIMENSION)
+class MapGenerator:
+    def __init__(self, min_subroom_dimension):
+        self.min_subroom_dimension = min_subroom_dimension
+        self.min_splittable_subroom_dimension = 2 * self.min_subroom_dimension + 1
+        self.width, self.height = 0, 0
+        self.room_map = []
+        self.set_up_empty_room_with_sentinels()
 
-    wall_start_y = y
-    wall_end_y = y + h - 1
+    def set_up_empty_room_with_sentinels(self):
+        self.width, self.height = 10 + random.randint(0, 20), 10 + random.randint(0, 10)
 
-    for wall_y in range(wall_start_y, wall_end_y + 1):
-        room_map[wall_y][wall_x] = "#"
+        self.room_map = [[WALL_CHARACTER for x in range(self.width)] for y in range(self.height)]
 
-    door_generated = False
+        for y in range(1, self.height - 1):
+            for x in range(1, self.width - 1):
+                self.room_map[y][x] = EMPTY_CHARACTER
 
-    if room_map[wall_start_y - 1][wall_x] == EMPTY_CHARACTER:
-        room_map[wall_start_y][wall_x] = EMPTY_CHARACTER
-        door_generated = True
+    def split_subroom_vertically(self, x, y, w, h):
+        wall_x = random.randint(x + self.min_subroom_dimension, x + w - 1 - self.min_subroom_dimension)
 
-    if room_map[wall_end_y + 1][wall_x] == EMPTY_CHARACTER:
-        room_map[wall_end_y][wall_x] = EMPTY_CHARACTER
-        door_generated = True
+        wall_start_y = y
+        wall_end_y = y + h - 1
 
-    if not door_generated:
-        room_map[random.randint(wall_start_y, wall_end_y)][wall_x] = EMPTY_CHARACTER
+        for wall_y in range(wall_start_y, wall_end_y + 1):
+            self.room_map[wall_y][wall_x] = "#"
 
-    new_subroom_1 = (x, y, wall_x - x, h)
-    new_subroom_2 = (wall_x + 1, y, w - (wall_x - x) - 1, h)
-    return [new_subroom_1, new_subroom_2]
+        door_generated = False
 
+        if self.room_map[wall_start_y - 1][wall_x] == EMPTY_CHARACTER:
+            self.room_map[wall_start_y][wall_x] = EMPTY_CHARACTER
+            door_generated = True
 
-def split_subroom_horizontally(room_map, x, y, w, h):
-    wall_y = random.randint(y + MIN_SUBROOM_DIMENSION, y + h - 1 - MIN_SUBROOM_DIMENSION)
+        if self.room_map[wall_end_y + 1][wall_x] == EMPTY_CHARACTER:
+            self.room_map[wall_end_y][wall_x] = EMPTY_CHARACTER
+            door_generated = True
 
-    wall_start_x = x
-    wall_end_x = x + w - 1
+        if not door_generated:
+            self.room_map[random.randint(wall_start_y, wall_end_y)][wall_x] = EMPTY_CHARACTER
 
-    for wall_x in range(wall_start_x, wall_end_x + 1):
-        room_map[wall_y][wall_x] = WALL_CHARACTER
+        new_subroom_1 = (x, y, wall_x - x, h)
+        new_subroom_2 = (wall_x + 1, y, w - (wall_x - x) - 1, h)
+        return [new_subroom_1, new_subroom_2]
 
-    door_generated = False
+    def split_subroom_horizontally(self, x, y, w, h):
+        wall_y = random.randint(y + self.min_subroom_dimension, y + h - 1 - self.min_subroom_dimension)
 
-    if room_map[wall_y][wall_start_x - 1] == EMPTY_CHARACTER:
-        room_map[wall_y][wall_start_x] = EMPTY_CHARACTER
-        door_generated = True
+        wall_start_x = x
+        wall_end_x = x + w - 1
 
-    if room_map[wall_y][wall_end_x + 1] == EMPTY_CHARACTER:
-        room_map[wall_y][wall_end_x] = EMPTY_CHARACTER
-        door_generated = True
+        for wall_x in range(wall_start_x, wall_end_x + 1):
+            self.room_map[wall_y][wall_x] = WALL_CHARACTER
 
-    if not door_generated:
-        room_map[wall_y][random.randint(wall_start_x, wall_end_x)] = EMPTY_CHARACTER
+        door_generated = False
 
-    new_subroom_1 = (x, y, w, wall_y - y)
-    new_subroom_2 = (x, wall_y + 1, w, h - (wall_y - y) - 1)
-    return [new_subroom_1, new_subroom_2]
+        if self.room_map[wall_y][wall_start_x - 1] == EMPTY_CHARACTER:
+            self.room_map[wall_y][wall_start_x] = EMPTY_CHARACTER
+            door_generated = True
 
+        if self.room_map[wall_y][wall_end_x + 1] == EMPTY_CHARACTER:
+            self.room_map[wall_y][wall_end_x] = EMPTY_CHARACTER
+            door_generated = True
 
-def generate_subrooms(room_map, w, h):
-    subrooms = []
+        if not door_generated:
+            self.room_map[wall_y][random.randint(wall_start_x, wall_end_x)] = EMPTY_CHARACTER
 
-    # (top left x, top left y, width, height)
-    subroom_stack = [(1, 1, w - 2, h - 2)]
+        new_subroom_1 = (x, y, w, wall_y - y)
+        new_subroom_2 = (x, wall_y + 1, w, h - (wall_y - y) - 1)
+        return [new_subroom_1, new_subroom_2]
 
-    while len(subroom_stack) != 0:
-        x, y, w, h = subroom = subroom_stack.pop()
+    def generate_subrooms(self):
+        subrooms = []
 
-        possible_wall_directions = []
+        # (top left x, top left y, width, height)
+        subroom_stack = [(1, 1, self.width - 2, self.height - 2)]
 
-        if w >= MIN_SPLITTABLE_SUBROOM_DIMENSION:
-            possible_wall_directions.append(WALL_VERTICAL)
+        while len(subroom_stack) != 0:
+            x, y, w, h = subroom = subroom_stack.pop()
 
-        if h >= MIN_SPLITTABLE_SUBROOM_DIMENSION:
-            possible_wall_directions.append(WALL_HORIZONTAL)
+            possible_wall_directions = []
 
-        if len(possible_wall_directions) == 0:
-            subrooms.append(subroom)
-            continue
+            if w >= self.min_splittable_subroom_dimension:
+                possible_wall_directions.append(WALL_VERTICAL)
 
-        if random.choice(possible_wall_directions) == WALL_VERTICAL:
-            subroom_stack.extend(split_subroom_vertically(room_map, *subroom))
-        else:
-            subroom_stack.extend(split_subroom_horizontally(room_map, *subroom))
+            if h >= self.min_splittable_subroom_dimension:
+                possible_wall_directions.append(WALL_HORIZONTAL)
 
-    return subrooms
+            if len(possible_wall_directions) == 0:
+                subrooms.append(subroom)
+                continue
 
+            if random.choice(possible_wall_directions) == WALL_VERTICAL:
+                subroom_stack.extend(self.split_subroom_vertically(*subroom))
+            else:
+                subroom_stack.extend(self.split_subroom_horizontally(*subroom))
 
-def generate_interior(room_map, w, h, subroom_count):
-    monster_count = subroom_count // 2
-    monster_order = [ZOMBIE_CHARACTER, ZOMBIE_CHARACTER, VAMPIRE_CHARACTER, ZOMBIE_CHARACTER,
-                    HUNTER_CHARACTER, VAMPIRE_CHARACTER]
-    for i, char in zip(range(monster_count), cycle(monster_order)):
-        x, y = find_random_unused_position(room_map, w, h)
-        room_map[y][x] = char
+        return subrooms
 
-    for char in [FOG_CHARACTER, SPEED_CHARACTER]:
-        x, y = find_random_unused_position(room_map, w, h)
-        room_map[y][x] = char
+    def generate_interior(self, subroom_count):
+        monster_count = subroom_count // 2
+        monster_order = [ZOMBIE_CHARACTER, ZOMBIE_CHARACTER, VAMPIRE_CHARACTER, ZOMBIE_CHARACTER,
+                        HUNTER_CHARACTER, VAMPIRE_CHARACTER]
+        for i, char in zip(range(monster_count), cycle(monster_order)):
+            x, y = self.find_random_unused_position()
+            self.room_map[y][x] = char
 
+        for char in [FOG_CHARACTER, SPEED_CHARACTER]:
+            x, y = self.find_random_unused_position()
+            self.room_map[y][x] = char
 
-def find_random_unused_position(room_map, width, height):
-    x, y = 0, 0
-    while room_map[y][x] != EMPTY_CHARACTER:
-        x, y = random.randint(0, width - 1), random.randint(0, height - 1)
-    return x, y
+    def find_random_unused_position(self):
+        x, y = 0, 0
+        while self.room_map[y][x] != EMPTY_CHARACTER:
+            x, y = random.randint(0, self.width - 1), random.randint(0, self.height - 1)
+        return x, y
 
+    def generate_exit_position(self, start_x, start_y):
+        """
+        At distant a place from start.
+        """
+        distance_map = [[-1 for x in range(self.width)] for y in range(self.height)]
 
-def generate_exit_position(room_map, width, height, start_x, start_y):
-    """
-    At distant a place from start.
-    """
-    distance_map = [[-1 for x in range(width)] for y in range(height)]
+        q = Queue()
+        q.put((start_x, start_y))
+        distance_map[start_y][start_x] = 0
 
-    q = Queue()
-    q.put((start_x, start_y))
-    distance_map[start_y][start_x] = 0
+        exit_x, exit_y = 0, 0
 
-    exit_x, exit_y = 0, 0
+        while not q.empty():
+            exit_x, exit_y = x, y = q.get()
+            for dx, dy in [(-1, 0), (0, -1), (1, 0), (0, 1)]:
+                nx, ny = x + dx, y + dy
+                if self.room_map[ny][nx] == EMPTY_CHARACTER and distance_map[ny][nx] == -1:
+                    distance_map[ny][nx] = distance_map[y][x] + 1
+                    q.put((nx, ny))
 
-    while not q.empty():
-        exit_x, exit_y = x, y = q.get()
-        for dx, dy in [(-1, 0), (0, -1), (1, 0), (0, 1)]:
-            nx, ny = x + dx, y + dy
-            if room_map[ny][nx] == EMPTY_CHARACTER and distance_map[ny][nx] == -1:
-                distance_map[ny][nx] = distance_map[y][x] + 1
-                q.put((nx, ny))
+        self.room_map[exit_y][exit_x] = EXIT_CHARACTER
 
-    room_map[exit_y][exit_x] = EXIT_CHARACTER
+    def generate_random_room(self):
+        """
+        Creates a 2D map of characters.
+        """
 
+        self.set_up_empty_room_with_sentinels()
 
-def generate_random_room():
-    """
-    Creates a 2D map of characters.
-    """
-    width, height = 10 + random.randint(0, 20), 10 + random.randint(0, 10)
+        subrooms = self.generate_subrooms()
 
-    room_map = [[WALL_CHARACTER for x in range(width)] for y in range(height)]
+        start_x, start_y = self.find_random_unused_position()
+        self.room_map[start_y][start_x] = START_CHARACTER
 
-    for y in range(1, height-1):
-        for x in range(1, width-1):
-            room_map[y][x] = EMPTY_CHARACTER
+        self.generate_exit_position(start_x, start_y)
 
-    subrooms = generate_subrooms(room_map, width, height)
-
-    start_x, start_y = find_random_unused_position(room_map, width, height)
-    room_map[start_y][start_x] = START_CHARACTER
-
-    generate_exit_position(room_map, width, height, start_x, start_y)
-
-    generate_interior(room_map, width, height, len(subrooms))
-
-    return room_map
+        self.generate_interior(len(subrooms))
 
 
 def save_map(room_map, filename):
     with open(filename, "w") as file:
         file.write("\n".join(map("".join, room_map)))
-
-random.seed()
-save_map(generate_random_room(), "generated.map")
