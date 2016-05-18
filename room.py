@@ -12,8 +12,9 @@ class Room:
         self.height = height
 
         self.player = None
-        self.static_map = [[None] * width for x in range(height)]
-        self.dynamic_map = [[None] * width for x in range(height)]
+        self.static_map = [[None] * width for y in range(height)]
+        self.dynamic_map = [[None] * width for y in range(height)]
+        self.tracking_map = [[None] * width for y in range(height)]
 
     def canvas_size(self):
         return self.width * self.square_size, self.height * self.square_size
@@ -90,3 +91,4 @@ class Room:
             raise RuntimeError("no starting position present in room")
         self.height = len(self.static_map)
         self.width = col_count
+        self.tracking_map = [[None] * self.width for y in range(self.height)]

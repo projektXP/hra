@@ -24,6 +24,8 @@ class Player(MovingThing):
         super().start_moving(x, y)
 
     def step(self):
+        self.update_tracking()
+
         if self.moving:
             self.move_a_bit()
 
@@ -35,6 +37,25 @@ class Player(MovingThing):
                         self.x + self.movements[key][0],
                         self.y + self.movements[key][1],
                     )
+
+    def update_tracking(self):
+        """
+        Low-level function called every frame in order to update room.tracking_map via BFS algorithm.
+        """
+        visited = set()
+        queue = [((self.y, self.x), 0)]
+        while queue:
+            node, level = queue.pop(0)
+            if node not in visited:
+                visited.add(node)
+                y, x = node[0], node[1]
+                self.room.tracking_map[y][x] = level
+                for neighbour in {(y - 1, x),
+                                  (y + 1, x),
+                                  (y, x - 1),
+                                  (y, x + 1)}:
+                    if super().can_move_to(neighbour[1], neighbour[0]) and neighbour not in visited:
+                        queue.append((neighbour, level + 1))
 
     def set_image(self):
         self.canvas = pygame.image.load('pictures/player.png')
