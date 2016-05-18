@@ -6,27 +6,16 @@ from abc import ABCMeta, abstractmethod
 
 class Monster(MovingThing, metaclass=ABCMeta):
     def follow_player(self):
-        nx, ny = self.x, self.y
-        if self.y == self.room.player.y and self.room.player.x == self.x:
-            return
-
-        if self.room.player.x > self.x:
-            nx = self.x + 1
-        elif self.room.player.x < self.x:
-            nx = self.x - 1
-
-        if self.room.player.y > self.y:
-            ny = self.y + 1
-        elif self.room.player.y < self.y:
-            ny = self.y - 1
-
-        if self.x != nx and self.y != ny:
-            if random.randrange(2):
-                nx = self.x
-            else:
-                ny = self.y
-
-        self.start_moving(nx, ny)
+        neighbours = [n for n in {(self.y - 1, self.x),
+                                  (self.y + 1, self.x),
+                                  (self.y, self.x - 1),
+                                  (self.y, self.x + 1)} if self.room.tracking_map[n[0]][n[1]] is not None]
+        if neighbours:
+            ny, nx = neighbours[0]
+            for n in neighbours:
+                if self.room.tracking_map[n[0]][n[1]] < self.room.tracking_map[ny][nx]:
+                    ny, nx = n[0], n[1]
+            self.start_moving(nx, ny)
 
     def step(self):
         if self.moving:
