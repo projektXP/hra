@@ -29,18 +29,6 @@ class Player(MovingThing):
     def step(self):
         self.update_tracking()
 
-        # test
-        with open('log', 'a') as f:
-            for riadok in self.room.tracking_map:
-                for c in riadok:
-                    if c is not None:
-                        print('{:2} '.format(c), file=f, sep='', end='')
-                    else:
-                        print('{:2} '.format('-'), file=f, sep='', end='')
-                print(file=f)
-            print('>'*80, file=f)
-        # test
-
         if self.moving:
             self.move_a_bit()
 
@@ -57,6 +45,7 @@ class Player(MovingThing):
         """
         Low-level function called every frame in order to update room.tracking_map via BFS algorithm.
         """
+        self.room.tracking_map = [[None] * self.room.width for y in range(self.room.height)]
         visited = set()
         queue = [(Point(self.y, self.x), 0)]
         while queue:
@@ -69,7 +58,7 @@ class Player(MovingThing):
                                   Point(y + 1, x),
                                   Point(y, x - 1),
                                   Point(y, x + 1)}:
-                    if self.can_move_to(neighbour.x, neighbour.y) and neighbour not in visited:
+                    if super().can_move_to(neighbour.x, neighbour.y) and neighbour not in visited:
                         queue.append((neighbour, level + 1))
 
     def set_image(self):
