@@ -1,6 +1,9 @@
 from moving_thing import MovingThing
 from item import Item
 import pygame
+from collections import namedtuple
+
+Point = namedtuple('Point', ['y', 'x'])
 
 
 class Player(MovingThing):
@@ -26,6 +29,18 @@ class Player(MovingThing):
     def step(self):
         self.update_tracking()
 
+        # test
+        with open('log', 'a') as f:
+            for riadok in self.room.tracking_map:
+                for c in riadok:
+                    if c is not None:
+                        print('{:2} '.format(c), file=f, sep='', end='')
+                    else:
+                        print('{:2} '.format('-'), file=f, sep='', end='')
+                print(file=f)
+            print('>'*80, file=f)
+        # test
+
         if self.moving:
             self.move_a_bit()
 
@@ -43,18 +58,18 @@ class Player(MovingThing):
         Low-level function called every frame in order to update room.tracking_map via BFS algorithm.
         """
         visited = set()
-        queue = [((self.y, self.x), 0)]
+        queue = [(Point(self.y, self.x), 0)]
         while queue:
             node, level = queue.pop(0)
             if node not in visited:
                 visited.add(node)
-                y, x = node[0], node[1]
+                y, x = node.y, node.x
                 self.room.tracking_map[y][x] = level
-                for neighbour in {(y - 1, x),
-                                  (y + 1, x),
-                                  (y, x - 1),
-                                  (y, x + 1)}:
-                    if super().can_move_to(neighbour[1], neighbour[0]) and neighbour not in visited:
+                for neighbour in {Point(y - 1, x),
+                                  Point(y + 1, x),
+                                  Point(y, x - 1),
+                                  Point(y, x + 1)}:
+                    if self.can_move_to(neighbour.x, neighbour.y) and neighbour not in visited:
                         queue.append((neighbour, level + 1))
 
     def set_image(self):
