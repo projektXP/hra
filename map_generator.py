@@ -1,14 +1,7 @@
 """
 1) Generate sub-rooms
-    - select sub-room
-    - create wall in sub-room with entrance
-    - add 2 new sub-rooms to list
-
 2) Generate interiors of sub-rooms
-    - monsters, items
-
 3) Put start at random place
-
 4) Put exit at place that is as far as it gets
 """
 
@@ -24,9 +17,6 @@ WALL_CHARACTER = "#"
 EMPTY_CHARACTER = "."
 START_CHARACTER = "S"
 EXIT_CHARACTER = "E"
-VAMPIRE_CHARACTER = "V"
-ZOMBIE_CHARACTER = "Z"
-HUNTER_CHARACTER = "H"
 SPEED_CHARACTER = "s"
 FOG_CHARACTER = "f"
 
@@ -101,6 +91,11 @@ class MapGenerator:
         return [new_subroom_1, new_subroom_2]
 
     def generate_subrooms(self):
+        """
+        Select sub-room from stack.
+        Create wall in sub-room (split sub-room into 2)
+        If the subrooms are large enough to split, add 2 new sub-rooms to stack, otherwise add them to result.
+        """
         subrooms = []
 
         # (top left x, top left y, width, height)
@@ -147,23 +142,22 @@ class MapGenerator:
 
     def generate_exit_position(self, start_x, start_y):
         """
-        At distant a place from start.
+        At as distant place from start as possible.
         """
         distance_map = [[-1 for x in range(self.width)] for y in range(self.height)]
 
-        q = Queue()
-        q.put((start_x, start_y))
+        to_visit = [(start_x, start_y)]
         distance_map[start_y][start_x] = 0
 
         exit_x, exit_y = 0, 0
 
-        while not q.empty():
-            exit_x, exit_y = x, y = q.get()
+        while to_visit:
+            exit_x, exit_y = x, y = to_visit.pop()
             for dx, dy in [(-1, 0), (0, -1), (1, 0), (0, 1)]:
                 nx, ny = x + dx, y + dy
                 if self.room_map[ny][nx] == EMPTY_CHARACTER and distance_map[ny][nx] == -1:
                     distance_map[ny][nx] = distance_map[y][x] + 1
-                    q.put((nx, ny))
+                    to_visit.append((nx, ny))
 
         self.room_map[exit_y][exit_x] = EXIT_CHARACTER
 
@@ -190,6 +184,10 @@ def save_map(room_map, filename):
 
 
 def create_random_map_to_file():
+    """
+    Function encapsulating settings of random map generation - dimensions, monsters, ...
+    This function is used by the game.
+    """
     random.seed()
 
     width, height = 10 + random.randint(0, 20), 10 + random.randint(0, 10)
