@@ -13,6 +13,7 @@ class Player(MovingThing):
             pygame.K_DOWN:  (0, 1),
         }
         self.health = 100
+        self.speed *= 1.3
 
     @classmethod
     def class_can_move_to(cls, x, y, room):

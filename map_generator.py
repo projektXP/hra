@@ -13,6 +13,7 @@
 """
 
 import random
+import time
 from itertools import cycle
 from queue import Queue
 
@@ -31,15 +32,16 @@ FOG_CHARACTER = "f"
 
 
 class MapGenerator:
-    def __init__(self, min_subroom_dimension):
+    def __init__(self, min_subroom_dimension=4, width=20, height=20, monsters_per_room=0.5, monster_sequence="ZZVZH"):
         self.min_subroom_dimension = min_subroom_dimension
+        self.width, self.height = width, height
+        self.monsters_per_room = monsters_per_room
+        self.monster_sequence = monster_sequence
+
         self.min_splittable_subroom_dimension = 2 * self.min_subroom_dimension + 1
-        self.width, self.height = 0, 0
         self.room_map = []
 
     def set_up_empty_room_with_sentinels(self):
-        self.width, self.height = 10 + random.randint(0, 20), 10 + random.randint(0, 10)
-
         self.room_map = [[WALL_CHARACTER for x in range(self.width)] for y in range(self.height)]
 
         for y in range(1, self.height - 1):
@@ -127,10 +129,9 @@ class MapGenerator:
         return subrooms
 
     def generate_interior(self, subroom_count):
-        monster_count = subroom_count // 2
-        monster_order = [ZOMBIE_CHARACTER, ZOMBIE_CHARACTER, VAMPIRE_CHARACTER, ZOMBIE_CHARACTER,
-                        HUNTER_CHARACTER, VAMPIRE_CHARACTER]
-        for i, char in zip(range(monster_count), cycle(monster_order)):
+        monster_count = round(subroom_count * self.monsters_per_room)
+
+        for i, char in zip(range(monster_count), cycle(self.monster_sequence)):
             x, y = self.find_random_unused_position()
             self.room_map[y][x] = char
 
@@ -186,3 +187,19 @@ class MapGenerator:
 def save_map(room_map, filename):
     with open(filename, "w") as file:
         file.write("\n".join(map("".join, room_map)))
+
+
+def create_random_map_to_file():
+    random.seed()
+
+    width, height = 10 + random.randint(0, 20), 10 + random.randint(0, 10)
+    min_subroom_dimension = random.randint(2, 4)
+    monsters_per_room = [0, 0, 0.1, 0.3, 0.5][min_subroom_dimension]
+
+    m = MapGenerator(min_subroom_dimension, width, height, monsters_per_room)
+    m.generate_random_room()
+
+    map_filename = "{}-{}x{}.map".format(time.strftime("%Y%m%d%H%M"), height, width)
+    save_map(m.room_map, map_filename)
+
+    return map_filename

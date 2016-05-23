@@ -11,7 +11,7 @@ class Item(Thing, metaclass=ABCMeta):
 
 class SpeedBoost(Item):
     def use(self, player):
-        player.speed *= 2
+        player.speed *= 1.5
 
     def set_image(self):
         self.canvas = pygame.image.load('pictures/speed.png')
