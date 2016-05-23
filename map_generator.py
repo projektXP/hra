@@ -36,7 +36,6 @@ class MapGenerator:
         self.min_splittable_subroom_dimension = 2 * self.min_subroom_dimension + 1
         self.width, self.height = 0, 0
         self.room_map = []
-        self.set_up_empty_room_with_sentinels()
 
     def set_up_empty_room_with_sentinels(self):
         self.width, self.height = 10 + random.randint(0, 20), 10 + random.randint(0, 10)
