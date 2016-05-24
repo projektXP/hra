@@ -8,24 +8,28 @@ from monster import Monster
 
 class Game:
     def __init__(self):
-        self.over = False
+        self.game_over = False
         self.screen = None
         self.room = None
         self.time = 0
-        self.font = None
 
-        self.loop()
-
-    def loop(self):
         pygame.init()
+
         self.room = Room(self, 32)
         self.room.load_from_file(os.path.join("map-files", "level.map"))
 
         self.screen = pygame.display.set_mode(self.room.canvas_size())
+        self.set_game_over_label()
 
-        font_path = os.path.join("fonts", "youmurdererbb_reg.ttf")
-        self.font = pygame.font.Font(font_path, 100)
+        self.loop()
 
+    def keyboard_quit(self):
+        for event in pygame.event.get():
+            if event.type == pygame.KEYDOWN:
+                return True
+        return False
+
+    def loop(self):
         while True:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -34,10 +38,10 @@ class Game:
             for monster in self.room.things_of_class(Monster, static_map=False):
                 monster.step()
 
-            if not self.over:
+            if not self.game_over:
                 self.room.player.step()
                 self.room.update_tracking()
-            elif pygame.key.get_pressed()[pygame.K_SPACE]:
+            elif self.keyboard_quit():
                 break
 
             self.screen.fill((127, 127, 127))
@@ -52,15 +56,27 @@ class Game:
                 thing_x, thing_y = thing.get_relative_position_to_draw()
                 self.screen.blit(img, self.room.abs_coords(thing_x, thing_y))
 
-            if self.over:
-                game_over = self.font.render("Game Over!", 0, (200, 0, 0))
-                game_over_x = self.room.width * self.room.square_size // 2 - game_over.get_width() // 2
-                game_over_y = self.room.height * self.room.square_size // 2 - game_over.get_height() // 2
-                self.screen.blit(game_over, (game_over_x, game_over_y))
+            if self.game_over:
+                self.print_game_over()
 
             pygame.display.flip()
             pygame.time.wait(15)
 
             self.time += 1
+
+    def set_game_over_label(self):
+        font_path = os.path.join("fonts", "youmurdererbb_reg.ttf")
+        font = pygame.font.Font(font_path, 100)
+
+        self.game_over_label = font.render("Game Over!", 0, (200, 0, 0))
+
+        self.game_over_x, self.game_over_y = self.room.canvas_size()
+        self.game_over_x //= 2
+        self.game_over_y //= 2
+        self.game_over_x -= self.game_over_label.get_width() // 2
+        self.game_over_y -= self.game_over_label.get_height() // 2
+
+    def print_game_over(self):
+        self.screen.blit(self.game_over_label, (self.game_over_x, self.game_over_y))
 
 game = Game()

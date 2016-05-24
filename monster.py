@@ -43,11 +43,10 @@ class Monster(MovingThing, metaclass=ABCMeta):
         self.attack_start = self.room.game.time
 
     def can_attack(self):
-        return (abs(self.room.player.x - self.x) == 1 and abs(self.room.player.y - self.y) == 0 or
-                abs(self.room.player.x - self.x) == 0 and abs(self.room.player.y - self.y) == 1)
+        return self.distance(self.room.player) == 1
 
     def attack_a_bit(self):
-        if self.room.game.time - self.attack_start == self.attack_time:
+        if self.room.game.time - self.attack_start >= self.attack_time:
             self.room.player.take_damage(self.damage)
             self.attack_start = None
             self.attacking = False

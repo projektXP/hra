@@ -49,4 +49,4 @@ class Player(MovingThing):
 
     def die(self):
         self.canvas.fill((64, 64, 64))
-        self.room.game.over = True
+        self.room.game.game_over = True
