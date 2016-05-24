@@ -1,5 +1,6 @@
 from moving_thing import MovingThing
 from item import Item
+from stationary_things import Exit
 import pygame
 
 
@@ -13,6 +14,7 @@ class Player(MovingThing):
             pygame.K_DOWN:  (0, 1),
         }
         self.health = 100
+        self.speed *= 1.3
 
     @classmethod
     def class_can_move_to(cls, x, y, room):
@@ -26,6 +28,9 @@ class Player(MovingThing):
         super().start_moving(x, y)
 
     def step(self):
+        if isinstance(self.room.static_map[self.y][self.x], Exit):
+            self.room.game.start()
+
         if self.moving:
             self.move_a_bit()
 
