@@ -12,6 +12,7 @@ class Player(MovingThing):
             pygame.K_UP:    (0, -1),
             pygame.K_DOWN:  (0, 1),
         }
+        self.health = 100
 
     @classmethod
     def class_can_move_to(cls, x, y, room):
@@ -39,3 +40,12 @@ class Player(MovingThing):
 
     def set_image(self):
         self.canvas = pygame.image.load('pictures/player.png')
+
+    def take_damage(self, damage):
+        self.health -= damage
+        if self.health <= 0:
+            self.die()
+
+    def die(self):
+        self.canvas.fill((64, 64, 64))
+        self.room.game.game_over = True
