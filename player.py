@@ -1,7 +1,6 @@
 from moving_thing import MovingThing
 from item import Item
 import pygame
-import sys
 
 
 class Player(MovingThing):

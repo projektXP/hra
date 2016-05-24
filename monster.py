@@ -11,11 +11,12 @@ class Monster(MovingThing, metaclass=ABCMeta):
         super().__init__(room, x, y)
         self.attacking = False
         self.attack_start = None
-        self.attack_time = None
-        self.damage = None
+        self.attack_time = 10
+        self.damage = 0
 
     def follow_player(self):
-        neighbours = [(x, y) for x, y in directions(self.x, self.y) if self.room.tracking_map[y][x] is not None]
+        neighbours = [(x, y) for x, y in directions(self.x, self.y)
+                      if self.room.tracking_map[y][x] is not None and self.can_move_to(x, y)]
         if neighbours:
             best_x, best_y = neighbours[0]
             for x, y in neighbours:
