@@ -7,8 +7,11 @@
 
 import random
 import time
+import os
 from itertools import cycle
 from queue import Queue
+
+from utils import directions
 
 WALL_VERTICAL = 0
 WALL_HORIZONTAL = 1
@@ -146,18 +149,18 @@ class MapGenerator:
         """
         distance_map = [[-1 for x in range(self.width)] for y in range(self.height)]
 
-        to_visit = [(start_x, start_y)]
+        to_visit = Queue()
+        to_visit.put((start_x, start_y))
         distance_map[start_y][start_x] = 0
 
         exit_x, exit_y = 0, 0
 
-        while to_visit:
-            exit_x, exit_y = x, y = to_visit.pop()
-            for dx, dy in [(-1, 0), (0, -1), (1, 0), (0, 1)]:
-                nx, ny = x + dx, y + dy
+        while not to_visit.empty():
+            exit_x, exit_y = x, y = to_visit.get()
+            for nx, ny in directions(x, y):
                 if self.room_map[ny][nx] == EMPTY_CHARACTER and distance_map[ny][nx] == -1:
                     distance_map[ny][nx] = distance_map[y][x] + 1
-                    to_visit.append((nx, ny))
+                    to_visit.put((nx, ny))
 
         self.room_map[exit_y][exit_x] = EXIT_CHARACTER
 
@@ -198,6 +201,7 @@ def create_random_map_to_file():
     m.generate_random_room()
 
     map_filename = "{}-{}x{}.map".format(time.strftime("%Y%m%d%H%M"), height, width)
-    save_map(m.room_map, map_filename)
+    map_path = os.path.join("map-files", map_filename)
+    save_map(m.room_map, map_path)
 
-    return map_filename
+    return map_path

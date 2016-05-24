@@ -4,49 +4,50 @@ import os
 from room import Room
 from monster import Vampire
 from map_generator import MapGenerator
+from utils import directions
 
 GRID_SIZE = 32
 
 
 class RoomLoadFromFileTests(unittest.TestCase):
     def test_invalid_filename(self):
-        room = Room(GRID_SIZE)
+        room = Room(game=None, square_size=GRID_SIZE)
         with self.assertRaises(FileNotFoundError):
             room.load_from_file("gibberish")
 
     def test_jagged_lines(self):
-        room = Room(GRID_SIZE)
+        room = Room(game=None, square_size=GRID_SIZE)
         with self.assertRaisesRegex(RuntimeError, "invalid input file: jagged lines"):
             room.load_from_file(os.path.join("test-files", "jagged.map"))
 
     def test_all_characters(self):
-        room = Room(GRID_SIZE)
+        room = Room(game=None, square_size=GRID_SIZE)
         room.load_from_file(os.path.join("test-files", "all-characters.map"))
 
     def test_invalid_character(self):
-        room = Room(GRID_SIZE)
+        room = Room(game=None, square_size=GRID_SIZE)
         with self.assertRaisesRegex(RuntimeError, "invalid input file: character '.' not mapped to any object"):
             room.load_from_file(os.path.join("test-files", "invalid-character.map"))
 
     def test_no_player(self):
-        room = Room(GRID_SIZE)
+        room = Room(game=None, square_size=GRID_SIZE)
         with self.assertRaisesRegex(RuntimeError, "no starting position present in room"):
             room.load_from_file(os.path.join("test-files", "no-start.map"))
 
     def test_more_players(self):
-        room = Room(GRID_SIZE)
+        room = Room(game=None, square_size=GRID_SIZE)
         with self.assertRaisesRegex(RuntimeError, "starting position already present in room"):
             room.load_from_file(os.path.join("test-files", "more-starts.map"))
 
     def test_empty(self):
-        room = Room(GRID_SIZE)
+        room = Room(game=None, square_size=GRID_SIZE)
         with self.assertRaisesRegex(RuntimeError, "no starting position present in room"):
             room.load_from_file(os.path.join("test-files", "empty.map"))
 
 
 class CanMoveToTests(unittest.TestCase):
     def test_player_move_out_of_bounds(self):
-        room = Room(GRID_SIZE)
+        room = Room(game=None, square_size=GRID_SIZE)
         room.load_from_file(os.path.join("test-files", "boundaries-test.map"))
         self.assertEqual(room.width, 10)
         self.assertEqual(room.height, 6)
@@ -57,7 +58,7 @@ class CanMoveToTests(unittest.TestCase):
         self.assertFalse(room.player.can_move_to(0, 6))
 
     def test_monster_move_out_of_bounds(self):
-        room = Room(GRID_SIZE)
+        room = Room(game=None, square_size=GRID_SIZE)
         room.load_from_file(os.path.join("test-files", "boundaries-test.map"))
         self.assertEqual(room.width, 10)
         self.assertEqual(room.height, 6)
@@ -168,7 +169,7 @@ class MapGeneratorTests(unittest.TestCase):
 
         while to_explore:
             x, y = to_explore.pop()
-            for nx, ny in ((x + 1, y), (x - 1, y), (x, y - 1), (x, y + 1)):
+            for nx, ny in directions(x, y):
                 if self.m.room_map[ny][nx] != "#" and self.m.room_map[ny][nx] != "@":
                     self.m.room_map[ny][nx] = "@"
                     to_explore.append((nx, ny))

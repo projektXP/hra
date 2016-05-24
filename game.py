@@ -4,6 +4,7 @@ import os
 from room import Room
 from thing import Thing
 from monster import Monster
+from map_generator import create_random_map_to_file
 
 
 class Game:
@@ -22,7 +23,7 @@ class Game:
         self.time = 0
 
         self.room = Room(self, 32)
-        self.room.load_from_file(os.path.join("map-files", "level.map"))
+        self.room.load_from_file(create_random_map_to_file())
 
         self.screen = pygame.display.set_mode(self.room.canvas_size())
         self.create_game_over_label()
