@@ -1,10 +1,11 @@
+from queue import Queue
+
 from player import Player
 from monster import Vampire, Hunter, Zombie, Monster
 from item import SpeedBoost, Fog
 from stationary_things import Wall, Exit, Start, Floor
-from collections import namedtuple
+from utils import directions
 
-Point = namedtuple('Point', ['y', 'x'])
 
 class Room:
     def __init__(self, square_size, width=0, height=0):
@@ -100,17 +101,15 @@ class Room:
         Low-level function called every frame in order to update room.tracking_map via BFS algorithm.
         """
         self.tracking_map = [[None] * self.width for y in range(self.height)]
-        visited = set()
-        queue = [(Point(self.player.y, self.player.x), 0)]
-        while queue:
-            node, level = queue.pop(0)
-            if node not in visited:
-                visited.add(node)
-                y, x = node.y, node.x
-                self.tracking_map[y][x] = level
-                for neighbour in (Point(y - 1, x),
-                                  Point(y + 1, x),
-                                  Point(y, x - 1),
-                                  Point(y, x + 1)):
-                    if Monster.class_can_move_to(neighbour.x, neighbour.y, self) and neighbour not in visited:
-                        queue.append((neighbour, level + 1))
+        queue = Queue()
+        queue.put((self.player.x, self.player.y))
+        self.tracking_map[self.player.y][self.player.x] = 0
+
+        while not queue.empty():
+            x, y = queue.get()
+            level = self.tracking_map[y][x]
+
+            for nx, ny in directions(x, y):
+                if Monster.class_can_move_to(nx, ny, self) and self.tracking_map[ny][nx] is None:
+                    self.tracking_map[ny][nx] = level + 1
+                    queue.put((nx, ny))
