@@ -16,10 +16,11 @@ class Player(MovingThing):
             pygame.K_DOWN:  (0, 1),
         }
 
-    def can_move_to(self, x, y):
-        return 0 <= x < self.room.width and 0 <= y < self.room.height and \
-               (self.room.dynamic_map[y][x] is None or self.room.dynamic_map[y][x].passable or isinstance(self.room.dynamic_map[y][x], Item)) and \
-               (self.room.static_map[y][x] is None or self.room.static_map[y][x].passable)
+    @classmethod
+    def class_can_move_to(cls, x, y, room):
+        return 0 <= x < room.width and 0 <= y < room.height and \
+               (room.dynamic_map[y][x] is None or room.dynamic_map[y][x].passable or isinstance(room.dynamic_map[y][x], Item)) and \
+               (room.static_map[y][x] is None or room.static_map[y][x].passable)
 
     def start_moving(self, x, y):
         if self.can_move_to(x, y) and isinstance(self.room.dynamic_map[y][x], Item):
@@ -27,7 +28,7 @@ class Player(MovingThing):
         super().start_moving(x, y)
 
     def step(self):
-        self.update_tracking()
+        # self.update_tracking()
 
         if self.moving:
             self.move_a_bit()

@@ -23,10 +23,14 @@ class MovingThing(Thing, metaclass=ABCMeta):
             rel_y = self.y + (self.destination.y - self.y) * self.moving_progress
             return rel_x, rel_y
 
+    @classmethod
+    def class_can_move_to(cls, x, y, room):
+        return 0 <= x < room.width and 0 <= y < room.height and \
+               (room.dynamic_map[y][x] is None or room.dynamic_map[y][x].passable) and \
+               (room.static_map[y][x] is None or room.static_map[y][x].passable)
+
     def can_move_to(self, x, y):
-        return 0 <= x < self.room.width and 0 <= y < self.room.height and \
-               (self.room.dynamic_map[y][x] is None or self.room.dynamic_map[y][x].passable) and \
-               (self.room.static_map[y][x] is None or self.room.static_map[y][x].passable)
+        self.class_can_move_to(x, y, self.room)
 
     def start_moving(self, x, y):
         """
