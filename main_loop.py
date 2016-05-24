@@ -20,6 +20,8 @@ while True:
     for monster in r.things_of_class(Monster, static_map=False):
         monster.step()
 
+    r.update_tracking()
+
     r.player.step()
 
     screen.fill((127, 127, 127))

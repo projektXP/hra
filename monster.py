@@ -1,32 +1,20 @@
-import random, pygame
+import random
+import pygame
+from abc import ABCMeta, abstractmethod
 
 from moving_thing import MovingThing
-from abc import ABCMeta, abstractmethod
+from utils import directions
 
 
 class Monster(MovingThing, metaclass=ABCMeta):
     def follow_player(self):
-        nx, ny = self.x, self.y
-        if self.y == self.room.player.y and self.room.player.x == self.x:
-            return
-
-        if self.room.player.x > self.x:
-            nx = self.x + 1
-        elif self.room.player.x < self.x:
-            nx = self.x - 1
-
-        if self.room.player.y > self.y:
-            ny = self.y + 1
-        elif self.room.player.y < self.y:
-            ny = self.y - 1
-
-        if self.x != nx and self.y != ny:
-            if random.randrange(2):
-                nx = self.x
-            else:
-                ny = self.y
-
-        self.start_moving(nx, ny)
+        neighbours = [(x, y) for x, y in directions(self.x, self.y) if self.room.tracking_map[y][x] is not None]
+        if neighbours:
+            best_x, best_y = neighbours[0]
+            for x, y in neighbours:
+                if self.room.tracking_map[y][x] < self.room.tracking_map[best_y][best_x]:
+                    best_x, best_y = x, y
+            self.start_moving(best_x, best_y)
 
     def step(self):
         if self.moving:

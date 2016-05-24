@@ -1,7 +1,10 @@
+from queue import Queue
+
 from player import Player
-from monster import Vampire, Hunter, Zombie
+from monster import Vampire, Hunter, Zombie, Monster
 from item import SpeedBoost, Fog
 from stationary_things import Wall, Exit, Start, Floor
+from utils import directions
 
 
 class Room:
@@ -12,8 +15,9 @@ class Room:
         self.height = height
 
         self.player = None
-        self.static_map = [[None] * width for x in range(height)]
-        self.dynamic_map = [[None] * width for x in range(height)]
+        self.static_map = [[None] * width for y in range(height)]
+        self.dynamic_map = [[None] * width for y in range(height)]
+        self.tracking_map = [[None] * width for y in range(height)]
 
     def canvas_size(self):
         return self.width * self.square_size, self.height * self.square_size
@@ -90,3 +94,22 @@ class Room:
             raise RuntimeError("no starting position present in room")
         self.height = len(self.static_map)
         self.width = col_count
+        self.tracking_map = [[None] * self.width for y in range(self.height)]
+
+    def update_tracking(self):
+        """
+        Low-level function called every frame in order to update room.tracking_map via BFS algorithm.
+        """
+        self.tracking_map = [[None] * self.width for y in range(self.height)]
+        queue = Queue()
+        queue.put((self.player.x, self.player.y))
+        self.tracking_map[self.player.y][self.player.x] = 0
+
+        while not queue.empty():
+            x, y = queue.get()
+            level = self.tracking_map[y][x]
+
+            for nx, ny in directions(x, y):
+                if Monster.class_can_move_to(nx, ny, self) and self.tracking_map[ny][nx] is None:
+                    self.tracking_map[ny][nx] = level + 1
+                    queue.put((nx, ny))
