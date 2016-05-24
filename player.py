@@ -1,9 +1,6 @@
 from moving_thing import MovingThing
 from item import Item
 import pygame
-from collections import namedtuple
-
-Point = namedtuple('Point', ['y', 'x'])
 
 
 class Player(MovingThing):
@@ -16,10 +13,11 @@ class Player(MovingThing):
             pygame.K_DOWN:  (0, 1),
         }
 
-    def can_move_to(self, x, y):
-        return 0 <= x < self.room.width and 0 <= y < self.room.height and \
-               (self.room.dynamic_map[y][x] is None or self.room.dynamic_map[y][x].passable or isinstance(self.room.dynamic_map[y][x], Item)) and \
-               (self.room.static_map[y][x] is None or self.room.static_map[y][x].passable)
+    @classmethod
+    def class_can_move_to(cls, x, y, room):
+        return 0 <= x < room.width and 0 <= y < room.height and \
+               (room.dynamic_map[y][x] is None or room.dynamic_map[y][x].passable or isinstance(room.dynamic_map[y][x], Item)) and \
+               (room.static_map[y][x] is None or room.static_map[y][x].passable)
 
     def start_moving(self, x, y):
         if self.can_move_to(x, y) and isinstance(self.room.dynamic_map[y][x], Item):
@@ -27,8 +25,6 @@ class Player(MovingThing):
         super().start_moving(x, y)
 
     def step(self):
-        self.update_tracking()
-
         if self.moving:
             self.move_a_bit()
 
@@ -40,26 +36,6 @@ class Player(MovingThing):
                         self.x + self.movements[key][0],
                         self.y + self.movements[key][1],
                     )
-
-    def update_tracking(self):
-        """
-        Low-level function called every frame in order to update room.tracking_map via BFS algorithm.
-        """
-        self.room.tracking_map = [[None] * self.room.width for y in range(self.room.height)]
-        visited = set()
-        queue = [(Point(self.y, self.x), 0)]
-        while queue:
-            node, level = queue.pop(0)
-            if node not in visited:
-                visited.add(node)
-                y, x = node.y, node.x
-                self.room.tracking_map[y][x] = level
-                for neighbour in (Point(y - 1, x),
-                                  Point(y + 1, x),
-                                  Point(y, x - 1),
-                                  Point(y, x + 1)):
-                    if super().can_move_to(neighbour.x, neighbour.y) and neighbour not in visited:
-                        queue.append((neighbour, level + 1))
 
     def set_image(self):
         self.canvas = pygame.image.load('pictures/player.png')
