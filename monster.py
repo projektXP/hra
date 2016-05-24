@@ -8,10 +8,10 @@ Point = namedtuple('Point', ['y', 'x'])
 
 class Monster(MovingThing, metaclass=ABCMeta):
     def follow_player(self):
-        neighbours = [n for n in {Point(self.y - 1, self.x),
+        neighbours = [n for n in (Point(self.y - 1, self.x),
                                   Point(self.y + 1, self.x),
                                   Point(self.y, self.x - 1),
-                                  Point(self.y, self.x + 1)} if self.room.tracking_map[n.y][n.x] is not None]
+                                  Point(self.y, self.x + 1)) if self.room.tracking_map[n.y][n.x] is not None]
         if neighbours:
             ny, nx = neighbours[0]
             for n in neighbours:
@@ -29,7 +29,7 @@ class Monster(MovingThing, metaclass=ABCMeta):
     def think(self):
         pass
 
-()
+
 class Hunter(Monster):
     def __init__(self, room, x=0, y=0):
         super().__init__(room, x, y)

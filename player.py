@@ -54,10 +54,10 @@ class Player(MovingThing):
                 visited.add(node)
                 y, x = node.y, node.x
                 self.room.tracking_map[y][x] = level
-                for neighbour in {Point(y - 1, x),
+                for neighbour in (Point(y - 1, x),
                                   Point(y + 1, x),
                                   Point(y, x - 1),
-                                  Point(y, x + 1)}:
+                                  Point(y, x + 1)):
                     if super().can_move_to(neighbour.x, neighbour.y) and neighbour not in visited:
                         queue.append((neighbour, level + 1))
 
