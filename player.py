@@ -53,5 +53,5 @@ class Player(MovingThing):
             self.die()
 
     def die(self):
-        self.canvas.fill((64, 64, 64))
+        self.canvas = pygame.image.load('pictures/dead_player.png')
         self.room.game.game_over = True
