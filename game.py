@@ -14,6 +14,9 @@ class Game:
         self.room = None
         self.screen = None
 
+        self.overlay = None
+        self.overlay_radius = 0
+
         self.game_over_label = None
         self.game_over_x = 0
         self.game_over_y = 0
@@ -26,6 +29,7 @@ class Game:
         self.room.load_from_file(create_random_map_to_file())
 
         self.screen = pygame.display.set_mode(self.room.canvas_size())
+        self.create_overlay()
         self.create_game_over_label()
 
         self.loop()
@@ -57,6 +61,8 @@ class Game:
                 thing_x, thing_y = thing.get_relative_position_to_draw()
                 self.screen.blit(img, self.room.abs_coords(thing_x, thing_y))
 
+            self.apply_overlay()
+
             if self.game_over:
                 self.print_game_over()
 
@@ -79,6 +85,27 @@ class Game:
 
     def print_game_over(self):
         self.screen.blit(self.game_over_label, (self.game_over_x, self.game_over_y))
+
+    def create_overlay(self):
+        self.overlay_radius = self.room.player.vision * self.room.square_size
+        w, h = self.room.canvas_size()
+        overlay = pygame.Surface((w * 2, h * 2)).convert_alpha()
+        overlay.fill((0, 0, 0, 255))
+        pygame.draw.circle(overlay, (0, 0, 0, 0), (w, h), self.overlay_radius)
+        self.overlay = overlay
+
+    def apply_overlay(self):
+        if self.room.player.vision != self.overlay_radius:
+            self.create_overlay()
+
+        half_square = self.room.square_size // 2
+        center_x, center_y = self.room.abs_coords(*self.room.player.get_relative_position_to_draw())
+        center_x += half_square
+        center_y += half_square
+
+        size_x, size_y = self.overlay.get_rect().size
+        self.screen.blit(self.overlay, (center_x - size_x // 2, center_y - size_y // 2))
+
 
 if __name__ == "__main__":
     pygame.init()

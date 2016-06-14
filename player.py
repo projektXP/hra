@@ -15,6 +15,7 @@ class Player(MovingThing):
         }
         self.health = 100
         self.speed *= 1.3
+        self.vision = 4
 
     @classmethod
     def class_can_move_to(cls, x, y, room):
@@ -52,5 +53,5 @@ class Player(MovingThing):
             self.die()
 
     def die(self):
-        self.canvas.fill((64, 64, 64))
+        self.canvas = pygame.image.load('pictures/dead_player.png')
         self.room.game.game_over = True
