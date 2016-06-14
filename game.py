@@ -13,6 +13,8 @@ class Game:
         self.time = 0
         self.room = None
         self.screen = None
+        self.overlay_x = 0
+        self.overlay_y = 0
 
         self.game_over_label = None
         self.game_over_x = 0
@@ -56,6 +58,11 @@ class Game:
                 img = thing.draw()
                 thing_x, thing_y = thing.get_relative_position_to_draw()
                 self.screen.blit(img, self.room.abs_coords(thing_x, thing_y))
+
+            overlay = pygame.image.load(os.path.join('pictures', 'overlay.png'))
+            center_x, center_y = self.room.player.get_relative_position_to_draw()
+            size_x, size_y = overlay.get_rect().size
+            self.screen.blit(overlay, (center_x*32-size_x/2+16, center_y*32-size_y/2+16))
 
             if self.game_over:
                 self.print_game_over()
