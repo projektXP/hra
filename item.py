@@ -19,7 +19,7 @@ class SpeedBoost(Item):
 
 class Fog(Item):
     def use(self, player):
-        player.vision = 5
+        player.vision = 2
 
     def set_image(self):
         self.canvas = pygame.image.load('pictures/fog.png')

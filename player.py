@@ -15,6 +15,7 @@ class Player(MovingThing):
         }
         self.health = 100
         self.speed *= 1.3
+        self.vision = 4
 
     @classmethod
     def class_can_move_to(cls, x, y, room):
